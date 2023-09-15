@@ -1,10 +1,10 @@
 import React from 'react'
 
-const SongCard = ({song}) => {
+const SongCard = () => {
   return (
     <div className=' bg-slate-400'>
       
-      <img src={song.share.image} className=' w-32' alt="" />
+      song 
     </div>
   )
 }
