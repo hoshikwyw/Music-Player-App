@@ -14,7 +14,7 @@ const Discover = () => {
   const { activeSong, isPlaying} = useSelector((state) => (state.player))
   const { data, isFetching, isLoading, error } = useGetChartTracksQuery();
   const genreTitle = "Pop";
-  console.log(data);
+  // console.log(data);
 
   if (isFetching) {return <Loader />};
 
