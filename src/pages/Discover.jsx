@@ -9,7 +9,7 @@ import Error from "../components/Error";
 const Discover = () => {
   const { data, isFetching, isLoading, error } = useGetChartTracksQuery();
   const genreTitle = "Pop";
-  // console.log(data.tracks);
+  console.log(data);
 
   if (isFetching) {return <Loader />};
 
