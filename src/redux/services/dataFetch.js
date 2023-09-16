@@ -12,9 +12,7 @@ export const shazamApi = createApi({
  endpoints: (builder) => ({
     getChartTracks: builder.query({
         query: () => 'charts/track',
-        // transformResponse: (response) => {
-        //     return response.data[1]; // Assuming you want the first object
-        //   },
+        
     })
  })
 });

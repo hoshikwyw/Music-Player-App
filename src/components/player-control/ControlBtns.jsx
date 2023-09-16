@@ -21,7 +21,7 @@ const ControlBtns = ({
   return (
     <div className=" flex items-center justify-around md:w-36 lg:w-52 2xl:w-80">
       <BsArrowRepeat
-        size={20}
+        size={18}
         color={repeat ? "red" : "white"}
         onClick={() => setRepeat((prev) => !prev)}
         className=" hidden sm:block cursor-pointer"
@@ -58,7 +58,7 @@ const ControlBtns = ({
         />
       )}
       <BsShuffle
-        size={20}
+        size={16}
         color={shuffle ? "red" : "white"}
         onClick={() => setShuffle((prev) => !prev)}
         className=" hidden sm:block cursor-pointer"

@@ -18,8 +18,8 @@ const SongCard = ({ song, i, isPlaying, activeSong, data }) => {
   };
 
   return (
-    <div className=" flex flex-col w-[250px] p-4 bg-white/5 bg-opacity-80 backdrop-blur-sm animate-slideup rounded-lg cursor-pointer">
-      <div className=" relative w-full h-60 group">
+    <div className=" flex flex-col w-[180px] p-4 bg-white/5 bg-opacity-80 backdrop-blur-sm animate-slideup rounded-lg cursor-pointer shadow-md">
+      <div className=" relative w-full h-40 group">
         <div
           className={` absolute inset-0 justify-center items-center bg-black bg-opacity-50 group-hover:flex ${
             activeSong?.title === song.title
@@ -34,7 +34,7 @@ const SongCard = ({ song, i, isPlaying, activeSong, data }) => {
             handlePlay={handlePlayBtn}
           />
         </div>
-        <img src={song.images?.coverart} alt="song_image" className=" h-60" />
+        <img src={song.images?.coverart} alt="song_image" className=" h-40" />
       </div>
       <div className=" mt-4 flex flex-col">
         <p className=" font-semibold text-lg text-white truncate">

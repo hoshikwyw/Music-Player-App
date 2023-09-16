@@ -6,7 +6,7 @@ import { useGetChartTracksQuery } from "../redux/services/dataFetch";
 import Loader from "../components/Loader";
 import Error from "../components/Error";
 import { useDispatch, useSelector } from "react-redux";
-
+import "../App.css"
 
 
 const Discover = () => {
@@ -25,10 +25,10 @@ const Discover = () => {
   return (
     <div className=" flex flex-col">
       <div className=" w-full flex justify-between items-center md:flex-row flex-col mt-4 mb-10">
-        <h2 className=" font-bold text-3xl">Discover</h2>
+        <h2 className=" font-bold text-3xl text-[#FFEEF4] main-text">Discover</h2>
         <select
           id=""
-          className=" bg-black text-gray-300 px-2 py-1 text-sm rounded-lg outline-none mt-0 md:mt-5">
+          className=" bg-opacity-60 backdrop-blur-lg text-gray-500 px-2 py-1 text-sm rounded-lg outline-none mt-0 md:mt-5">
           {genres.map((genre) => (
             <option key={genre.value} value={genre.value}>
               {genre.title}
