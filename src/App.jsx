@@ -3,9 +3,14 @@ import Sidebar from './components/Sidebar'
 import Searchbar from './components/Searchbar'
 import { Route, Routes } from 'react-router-dom'
 import Discover from './pages/Discover'
+import ArtistDetail from "./pages/ArtistDetail"
+import Artists from "./pages/Artists"
+import SongDetail from "./pages/SongDetail"
 import TopPlay from './components/TopPlay'
 import MusicPlayer from './pages/MusicPlayer'
 import { useSelector } from 'react-redux'
+import Charts from './pages/Charts'
+import Search from './pages/Search'
 
 const App = () => {
   const {activeSong} = useSelector((state) => state.player)
@@ -18,6 +23,11 @@ const App = () => {
           <div className="flex-1 h-fit pb-40">
             <Routes>
               <Route path='/' element={<Discover />} />
+              <Route path='/artists/:id' element={<ArtistDetail />} />
+              <Route path='/songs/:songid' element={<SongDetail />} />
+              <Route path='/artists' element={<Artists />} />
+              <Route path='/charts' element={<Charts />} />
+              <Route path='/search/:searchTerm' element={<Search />} />
             </Routes>
           </div>
           <div className="xl:sticky relative top-0 h-fit">

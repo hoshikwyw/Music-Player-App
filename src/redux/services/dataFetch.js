@@ -12,9 +12,17 @@ export const shazamApi = createApi({
  endpoints: (builder) => ({
     getChartTracks: builder.query({
         query: () => 'charts/track',
-        
-    })
+    }),
+    getSongDetail: builder.query({
+      query: ({songid}) => `/songs/get-details?key=${songid}`
+    }),
+    getRelateSong: builder.query({
+      query: ({artistId}) => `/songs/get-related-artist?key=${artistId}&l=en-US`
+    }),
+    getArtistDetail: builder.query({
+      query: ({artistId}) => `/artists/get-details?id=${artistId}&l=en-US`
+    }),
  })
 });
 
-export const {useGetChartTracksQuery} = shazamApi ;
+export const {useGetChartTracksQuery , useGetSongDetailQuery, useGetRelateSongQuery , useGetArtistDetailQuery} = shazamApi ;
