@@ -22,7 +22,11 @@ export const shazamApi = createApi({
     getArtistDetail: builder.query({
       query: ({artistId}) => `/artists/get-details?id=${artistId}&l=en-US`
     }),
+    searchSong: builder.query({
+      query: ({searchTerm}) => `search?term=${searchTerm}&l=en-US`
+    }),
+    
  })
 });
 
-export const {useGetChartTracksQuery , useGetSongDetailQuery, useGetRelateSongQuery , useGetArtistDetailQuery} = shazamApi ;
+export const {useGetChartTracksQuery , useGetSongDetailQuery, useGetRelateSongQuery , useGetArtistDetailQuery , useSearchSongQuery} = shazamApi ;
