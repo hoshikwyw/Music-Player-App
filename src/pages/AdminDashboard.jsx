@@ -347,7 +347,7 @@ const ArtistsTab = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {artists?.map((artist) => (
           <div key={artist.id} className="retro-card p-3 flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full border-2 border-border overflow-hidden flex-shrink-0 bg-surface">
+            <div className="w-12 h-12 rounded-full border border-glass-border overflow-hidden flex-shrink-0 bg-glass">
               {artist.avatar_url ? (
                 <img src={artist.avatar_url} alt="" className="w-full h-full object-cover" />
               ) : (

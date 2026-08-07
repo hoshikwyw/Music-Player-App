@@ -8,7 +8,7 @@ const PlayPause = ({ isPlaying, activeSong, song, handlePause, handlePlay }) => 
     <button
       onClick={isCurrent ? handlePause : handlePlay}
       aria-label={isCurrent ? `Pause ${song?.title}` : `Play ${song?.title}`}
-      className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center bg-primary border-2 border-border rounded-full shadow-retro-sm hover:bg-primary-light transition-colors"
+      className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center bg-primary rounded-full shadow-glass-glow hover:bg-primary-light active:scale-95 transition-all"
     >
       {isCurrent ? (
         <BsFillPauseFill className="text-on-accent text-sm sm:text-lg" />

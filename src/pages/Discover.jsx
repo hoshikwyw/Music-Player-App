@@ -2,7 +2,7 @@ import { useNowPlaying } from "../redux/services/playerSelectors";
 import { useState } from "react";
 import { genres } from "../assets/constants";
 import SongCard from "../components/SongCard";
-import RetroDropdown from "../components/RetroDropdown";
+import Dropdown from "../components/ui/Dropdown";
 import { useSongs } from "../api";
 import Loader from "../components/Loader";
 import Error from "../components/Error";
@@ -30,7 +30,7 @@ const Discover = () => {
             FIND YOUR NEXT FAVORITE TRACK
           </p>
         </div>
-        <RetroDropdown
+        <Dropdown
           options={genres}
           value={genre}
           onChange={(val) => {
@@ -48,7 +48,7 @@ const Discover = () => {
       ) : (
         <>
           <div className="flex items-center gap-3 mb-3 sm:mb-4">
-            <div className="retro-badge bg-surface border-2 border-border px-3 py-1 text-[10px] sm:text-xs tracking-wide font-retro-mono">
+            <div className="glass-badge px-3 py-1 text-[10px] sm:text-xs tracking-wide font-mono">
               {Math.min(end, total)} of {total} songs
             </div>
             <div className="flex-1 h-[2px] bg-border opacity-30 rounded-full" />

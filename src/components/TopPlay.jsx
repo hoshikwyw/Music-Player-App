@@ -86,7 +86,7 @@ const TopPlay = () => {
               className="animate-slideright"
             >
               <Link to={`/artists/${artist.id}`}>
-                <div className="w-12 h-12 rounded-full border-2 border-border overflow-hidden hover:border-primary transition-colors">
+                <div className="w-12 h-12 rounded-full border border-glass-border overflow-hidden hover:border-primary transition-colors">
                   <img
                     src={artist.avatarUrl}
                     alt={artist.name}

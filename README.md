@@ -111,7 +111,9 @@ src/
 │   │   └── Volumebar.jsx    # Volume slider
 │   ├── ui/
 │   │   ├── GlassPanel.jsx   # Glass surface primitive
-│   │   └── GlassButton.jsx  # Glass button primitive
+│   │   ├── GlassButton.jsx  # Glass button primitive
+│   │   ├── GlassSlider.jsx  # Seek / volume slider primitive
+│   │   └── Dropdown.jsx     # Glass dropdown
 │   ├── AmbientBackdrop.jsx  # Drifting colour fields behind the glass
 │   ├── Sidebar.jsx          # Fixed sidebar with navigation
 │   ├── Searchbar.jsx        # Fixed search bar with theme switcher
@@ -122,8 +124,7 @@ src/
 │   ├── SongBar.jsx          # Song list item
 │   ├── RelateSong.jsx       # Related songs section
 │   ├── DetailsTitle.jsx     # Detail page header
-│   ├── RetroDropdown.jsx    # Custom dropdown component
-│   ├── ThemeSwitcher.jsx    # Theme selection dropdown
+│   ├── ThemeSwitcher.jsx    # Vibe picker
 │   ├── RequireAdmin.jsx     # Admin route guard
 │   ├── AdminLogin.jsx       # Supabase email/password sign-in
 │   ├── ErrorBoundary.jsx    # Catches render crashes per route
@@ -252,8 +253,28 @@ Four ingredients, and all four matter:
 | `.glass-flat` | Rows inside a scrolling list — translucent, **no blur** |
 | `.glass-interactive` | Hover lift plus a light sweep across the pane |
 
-Components: `<GlassPanel elevation radius interactive>` and
-`<GlassButton variant size>` in `src/components/ui/`.
+Components in `src/components/ui/`: `<GlassPanel elevation radius interactive>`,
+`<GlassButton variant size>`, `<GlassSlider value max onChange label>`,
+`<Dropdown options value onChange>`.
+
+### Layout
+
+| Surface | Elevation | Treatment |
+|---|---|---|
+| Sidebar rail | 2 | Full height, hairline right edge |
+| Top bar | 1 | Fixed, hairline bottom edge |
+| Player dock | 3 | **Floating**, inset from the viewport edges so the ambient backdrop stays visible around it |
+| Cards | 2 | `glass-interactive` for hover lift |
+
+The dock is the only elevation-3 surface in the main layout — it is the closest
+thing to the viewer. Its play button is the one solid fill on screen, so the
+primary action reads first against all the translucency.
+
+### Legacy classes
+
+The `retro-*` classes still exist in `index.css`, redefined on top of the glass
+base so un-migrated pages inherit the new look automatically. They are being
+removed page by page; content components and `NowPlaying` still use them.
 
 **Rules**
 

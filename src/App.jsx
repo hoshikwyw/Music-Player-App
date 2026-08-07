@@ -24,6 +24,7 @@ const App = () => {
   const location = useLocation()
   const hasPlayer = !!activeSong?.id
   const isNowPlaying = location.pathname === '/now-playing'
+  const showDock = hasPlayer && !isNowPlaying
 
   return (
     <div className="relative flex min-h-screen">
@@ -32,14 +33,18 @@ const App = () => {
       {/* Mounted once, outside the routes, so playback survives navigation */}
       <AudioEngine />
       <Sidebar />
+
       <div className="flex-1 flex flex-col min-w-0 min-h-screen md:ml-[210px]">
-        {/* Fixed searchbar */}
-        <div className="fixed top-0 right-0 left-0 md:left-[210px] z-20">
+        <header className="fixed top-0 right-0 left-0 md:left-[210px] z-20">
           <Searchbar />
-        </div>
-        {/* Content below fixed searchbar */}
-        <div className="flex-1 flex lg:flex-row flex-col overflow-y-auto hide-scrollbar mt-[44px] sm:mt-[48px]">
-          <div className={`flex-1 min-w-0 px-3 sm:px-4 md:px-5 pt-3 sm:pt-4 ${hasPlayer && !isNowPlaying ? 'pb-24 sm:pb-28' : 'pb-6'}`}>
+        </header>
+
+        <div className="flex-1 flex lg:flex-row flex-col overflow-y-auto hide-scrollbar mt-[48px]">
+          <main
+            className={`flex-1 min-w-0 px-3 sm:px-4 md:px-5 pt-4 ${
+              showDock ? 'pb-32 sm:pb-36' : 'pb-8'
+            }`}
+          >
             {/* Keyed by path so navigating away clears a crashed route */}
             <ErrorBoundary key={location.pathname}>
               <Routes>
@@ -63,15 +68,25 @@ const App = () => {
                 <Route path='*' element={<NotFound />} />
               </Routes>
             </ErrorBoundary>
-          </div>
-          <div className="hidden lg:block lg:sticky lg:top-0 self-start lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto hide-scrollbar flex-shrink-0 lg:pr-4 lg:pt-4">
+          </main>
+
+          <aside
+            className={`hidden lg:block lg:sticky lg:top-0 self-start lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto hide-scrollbar flex-shrink-0 lg:pr-4 lg:pt-4 ${
+              showDock ? 'lg:pb-32' : 'lg:pb-8'
+            }`}
+          >
             <TopPlay />
-          </div>
+          </aside>
         </div>
       </div>
-      {hasPlayer && !isNowPlaying && (
-        <div className="fixed bottom-0 left-0 md:left-[210px] right-0 flex bg-card border-t-2 border-border z-10 shadow-[0_-4px_16px_rgba(0,0,0,0.05)] h-[60px] sm:h-[72px]">
-          <MusicPlayer />
+
+      {/* Floating dock, inset from the edges so the ambient backdrop stays
+          visible around it. Elevation 3 -- the closest surface to the viewer. */}
+      {showDock && (
+        <div className="fixed bottom-3 left-3 right-3 md:left-[222px] md:right-4 z-30 animate-slideup">
+          <div className="glass-3 rounded-glass-lg h-[64px] sm:h-[76px] flex overflow-hidden">
+            <MusicPlayer />
+          </div>
         </div>
       )}
     </div>

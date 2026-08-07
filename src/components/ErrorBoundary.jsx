@@ -25,7 +25,13 @@ class ErrorBoundary extends React.Component {
 
     return (
       <div className="flex flex-col justify-center items-center w-full h-[60vh] gap-3 px-4">
-        <div className="w-14 h-14 flex items-center justify-center bg-danger/10 border-2 border-danger rounded-retro">
+        <div
+          className="w-14 h-14 flex items-center justify-center rounded-glass-sm"
+          style={{
+            background: "color-mix(in srgb, var(--color-danger) 14%, transparent)",
+            border: "1px solid color-mix(in srgb, var(--color-danger) 40%, transparent)",
+          }}
+        >
           <BsExclamationTriangle className="text-danger text-xl" />
         </div>
         <h2 className="font-bold text-base text-text-primary text-center">
@@ -34,7 +40,7 @@ class ErrorBoundary extends React.Component {
         <p className="text-xs text-text-muted text-center max-w-sm">
           {this.state.error?.message || "An unexpected error occurred."}
         </p>
-        <button onClick={this.handleReset} className="retro-btn mt-1">
+        <button onClick={this.handleReset} className="glass-btn glass-btn-accent mt-1">
           Try again
         </button>
       </div>

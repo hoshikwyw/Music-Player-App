@@ -76,7 +76,7 @@ const Charts = () => {
                 }`}>
                   <button
                     onClick={() => playing ? handlePause() : handlePlay(song, i)}
-                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-primary border-2 border-border rounded-full shadow-retro-sm"
+                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-primary rounded-full shadow-glass-glow active:scale-95 transition-all"
                   >
                     {playing ? (
                       <BsFillPauseFill className="text-on-accent text-base sm:text-lg" />

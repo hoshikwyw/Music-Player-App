@@ -10,7 +10,7 @@ const DetailsTitle = ({ artist, song }) => {
   return (
     <div className="w-full mb-4 sm:mb-5">
       <div className="retro-card p-3 sm:p-4 flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-retro-sm sm:rounded-retro border-2 border-border overflow-hidden flex-shrink-0">
+        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-glass-sm sm:rounded-glass border border-glass-border overflow-hidden flex-shrink-0 shadow-glass">
           <img src={coverUrl} alt={heading} className="w-full h-full object-cover" />
         </div>
         <div className="text-center sm:text-left min-w-0">

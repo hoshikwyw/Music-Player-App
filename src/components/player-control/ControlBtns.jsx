@@ -6,6 +6,14 @@ import {
   BsShuffle,
 } from "react-icons/bs";
 
+const toggleClass = (on) =>
+  `hidden sm:flex w-7 h-7 items-center justify-center rounded-full transition-colors ${
+    on ? "text-primary" : "text-text-muted hover:text-text-primary"
+  }`;
+
+const skipClass =
+  "w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:text-text-primary hover:bg-glass transition-colors";
+
 const ControlBtns = ({
   isPlaying,
   repeat,
@@ -22,44 +30,33 @@ const ControlBtns = ({
       onClick={onToggleRepeat}
       aria-label={repeat ? "Disable repeat" : "Repeat this track"}
       aria-pressed={repeat}
-      className={`hidden sm:flex w-7 h-7 items-center justify-center rounded-full transition-colors ${
-        repeat ? "text-primary" : "text-text-muted hover:text-text-primary"
-      }`}
+      className={toggleClass(repeat)}
     >
       <BsArrowRepeat size={13} />
     </button>
 
     {hasQueue && (
-      <button
-        onClick={onPrev}
-        aria-label="Previous track"
-        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border-2 border-border text-text-primary hover:bg-background-secondary transition-colors"
-      >
-        <MdSkipPrevious size={16} className="sm:hidden" />
-        <MdSkipPrevious size={18} className="hidden sm:block" />
+      <button onClick={onPrev} aria-label="Previous track" className={skipClass}>
+        <MdSkipPrevious size={18} />
       </button>
     )}
 
+    {/* The one solid surface in the dock, so the primary action reads first. */}
     <button
       onClick={onPlayPause}
       aria-label={isPlaying ? "Pause" : "Play"}
-      className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center bg-primary border-2 border-border rounded-full shadow-retro-sm hover:bg-primary-light active:shadow-none active:translate-x-px active:translate-y-px transition-all"
+      className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-primary text-on-accent shadow-glass-glow hover:bg-primary-light active:scale-95 transition-all"
     >
       {isPlaying ? (
-        <BsFillPauseFill className="text-on-accent text-sm sm:text-lg" />
+        <BsFillPauseFill className="text-base sm:text-lg" />
       ) : (
-        <BsFillPlayFill className="text-on-accent text-sm sm:text-lg ml-0.5" />
+        <BsFillPlayFill className="text-base sm:text-lg ml-0.5" />
       )}
     </button>
 
     {hasQueue && (
-      <button
-        onClick={onNext}
-        aria-label="Next track"
-        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border-2 border-border text-text-primary hover:bg-background-secondary transition-colors"
-      >
-        <MdSkipNext size={16} className="sm:hidden" />
-        <MdSkipNext size={18} className="hidden sm:block" />
+      <button onClick={onNext} aria-label="Next track" className={skipClass}>
+        <MdSkipNext size={18} />
       </button>
     )}
 
@@ -67,9 +64,7 @@ const ControlBtns = ({
       onClick={onToggleShuffle}
       aria-label={shuffle ? "Disable shuffle" : "Shuffle queue"}
       aria-pressed={shuffle}
-      className={`hidden sm:flex w-7 h-7 items-center justify-center rounded-full transition-colors ${
-        shuffle ? "text-primary" : "text-text-muted hover:text-text-primary"
-      }`}
+      className={toggleClass(shuffle)}
     >
       <BsShuffle size={12} />
     </button>
