@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux'
 import SongCard from '../components/SongCard'
-import { useLikedSongs } from '../hooks/useSupabase'
+import { useLikedSongs } from '../api'
 import { BsHeartFill } from 'react-icons/bs'
 import Loader from '../components/Loader'
 import Error from '../components/Error'
@@ -27,7 +27,7 @@ const Liked = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
         {likedSongs?.map((song, i) => (
           <SongCard
-            key={`${song.key}-${i}`}
+            key={song.id}
             song={song}
             isPlaying={isPlaying}
             activeSong={activeSong}

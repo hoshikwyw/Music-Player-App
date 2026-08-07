@@ -88,6 +88,17 @@ npm run preview
 
 ```
 src/
+├── api/                     # Server data (TanStack Query)
+│   ├── mappers.js           # Supabase rows -> flat domain objects
+│   ├── queryKeys.js         # Every cache key, in one place
+│   ├── songs.js             # Songs, search, related, play tracking
+│   ├── artists.js           # Artists, detail, artist songs
+│   ├── albums.js            # Top albums, album detail
+│   ├── charts.js            # Play-count rankings
+│   ├── categories.js        # Genre categories
+│   ├── likes.js             # Liked songs
+│   ├── admin.js             # CRUD + storage upload
+│   └── index.js             # Barrel export
 ├── assets/          # Images, constants (genres, nav links)
 ├── components/
 │   ├── player-control/
@@ -107,13 +118,18 @@ src/
 │   ├── DetailsTitle.jsx     # Detail page header
 │   ├── RetroDropdown.jsx    # Custom dropdown component
 │   ├── ThemeSwitcher.jsx    # Theme selection dropdown
+│   ├── RequireAdmin.jsx     # Admin route guard
+│   ├── AdminLogin.jsx       # Supabase email/password sign-in
 │   ├── ErrorBoundary.jsx    # Catches render crashes per route
 │   ├── Loader.jsx           # Loading spinner
 │   └── Error.jsx            # Error state
 ├── contexts/
-│   └── ThemeContext.jsx     # Theme management with CSS variables
+│   ├── ThemeContext.jsx     # Theme management with CSS variables
+│   ├── SidebarContext.jsx   # Mobile sidebar open state
+│   └── AuthContext.jsx      # Supabase session + admin status
 ├── hooks/
-│   └── useSupabase.js       # All TanStack Query hooks & mutations
+│   ├── useAuth.js           # Consumes AuthContext
+│   └── useTheme.js          # Consumes ThemeContext
 ├── lib/
 │   └── supabase.js          # Supabase client
 ├── pages/
@@ -138,17 +154,39 @@ src/
 
 ## Data Layer
 
-All data access goes through TanStack Query hooks in `src/hooks/useSupabase.js`.
-Supabase rows are mapped into the shape components consume by the `transform*`
-functions at the top of that file.
+All server data goes through TanStack Query hooks in `src/api/`, split by
+domain. Import from the barrel:
 
-Public read hooks: `useSongs`, `useSongDetail`, `useRelatedSongs`,
-`useSearchSongs`, `useChartSongs`, `useTopArtists`, `useTopAlbums`,
-`useArtists`, `useArtistDetail`, `useArtistSongs`, `useAlbumDetail`,
-`useCategories`, `useLikedSongs`.
+```js
+import { useSongs, useArtistDetail, useLikeSong } from "../api";
+```
 
-Mutations: `useTrackPlay`, `useLikeSong`, `useUnlikeSong`, and the admin
-`useAdd*` / `useUpdate*` / `useDelete*` families plus `useUploadFile`.
+`src/api/` is server data; `src/hooks/` is UI state (`useAuth`, `useTheme`).
+
+### Domain model
+
+`src/api/mappers.js` converts Supabase rows into flat objects. Components never
+see database column names or nested API shapes:
+
+```js
+Song   { id, title, artistId, artistName, albumId, albumTitle,
+         coverUrl, audioUrl, genre, duration, playCount, lyrics[], chartRank? }
+Artist { id, name, bio, avatarUrl, totalPlays, songCount, rank?, genres[] }
+Album  { id, title, artistId, artistName, coverUrl, releaseDate,
+         totalPlays, songCount, rank? }
+```
+
+### Query keys
+
+Every key is defined in `src/api/queryKeys.js` and is hierarchical, so
+invalidating `["artists"]` cascades to the top-artists list and every artist's
+song list. Two hooks that run different queries must never share a key.
+
+### Not yet wired to UI
+
+`useTopAlbums`, `useAlbumDetail`, `useLikeSong`, and `useUnlikeSong` work but
+have no component using them — there is currently no way to like a song from
+the interface.
 
 ## Design System
 

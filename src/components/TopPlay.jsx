@@ -7,7 +7,7 @@ import "swiper/css/free-mode";
 import { playPause, setActiveSong } from "../redux/services/PlayerSlice";
 import { Link } from "react-router-dom";
 import TopPlayCard from "./TopPlayCard";
-import { useChartSongs, useArtists } from "../hooks/useSupabase";
+import { useChartSongs, useTopArtists } from "../api";
 
 const TopPlay = () => {
   const dispatch = useDispatch();
@@ -15,7 +15,7 @@ const TopPlay = () => {
   const divRef = useRef(null);
 
   const { data: chartSongs } = useChartSongs();
-  const { data: artistsData } = useArtists();
+  const { data: artistsData } = useTopArtists();
 
   useEffect(() => {
     if (divRef.current) {
@@ -54,7 +54,7 @@ const TopPlay = () => {
         <div className="flex flex-col">
           {topPlays?.map((song, i) => (
             <TopPlayCard
-              key={song.key}
+              key={song.id}
               song={song}
               i={i}
               isPlaying={isPlaying}
@@ -87,15 +87,16 @@ const TopPlay = () => {
         >
           {topArtists?.map((artist) => (
             <SwiperSlide
-              key={artist?.key}
+              key={artist.id}
               style={{ width: "48px", height: "auto" }}
               className="animate-slideright"
             >
-              <Link to={`/artists/${artist?.artists[0].adamid}`}>
+              <Link to={`/artists/${artist.id}`}>
                 <div className="w-12 h-12 rounded-full border-2 border-border overflow-hidden hover:border-primary transition-colors">
                   <img
-                    src={artist?.images.background}
-                    alt="artist"
+                    src={artist.avatarUrl}
+                    alt={artist.name}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 </div>

@@ -16,9 +16,9 @@ const Track = ({ isPlaying, isActive, activeSong }) => {
             isPlaying && isActive ? "animate-spin-slow" : ""
           }`}
         >
-          {activeSong?.attributes?.artwork?.url ? (
+          {activeSong?.coverUrl ? (
             <img
-              src={activeSong.attributes.artwork.url}
+              src={activeSong.coverUrl}
               alt="cover"
               className="w-full h-full object-cover"
             />
@@ -41,10 +41,10 @@ const Track = ({ isPlaying, isActive, activeSong }) => {
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[12px] sm:text-[13px] font-bold text-text-primary truncate group-hover:text-primary transition-colors">
-          {activeSong?.attributes?.name || "No playing song"}
+          {activeSong?.title || "No playing song"}
         </p>
         <p className="text-[10px] sm:text-[11px] text-text-muted truncate mt-0.5">
-          {activeSong?.attributes?.artistName || "Unknown artist"}
+          {activeSong?.artistName || "Unknown artist"}
         </p>
       </div>
     </div>

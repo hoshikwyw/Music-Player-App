@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { playPause, setActiveSong } from '../redux/services/PlayerSlice'
 import { BsFillPlayFill, BsFillPauseFill, BsTrophy } from 'react-icons/bs'
-import { useChartSongs } from '../hooks/useSupabase'
+import { useChartSongs } from '../api'
 import Loader from '../components/Loader'
 import Error from '../components/Error'
 
@@ -20,7 +20,7 @@ const Charts = () => {
     dispatch(playPause(false))
   }
 
-  const isCurrentSong = (song) => activeSong?.attributes?.name === song.attributes?.name
+  const isCurrentSong = (song) => activeSong?.id === song.id
 
   if (isLoading) return <Loader />
   if (error) return <Error />
@@ -55,7 +55,7 @@ const Charts = () => {
 
           return (
             <div
-              key={song.key}
+              key={song.id}
               className={`retro-card p-2.5 sm:p-3 bg-gradient-to-b ${rankColors[i]} cursor-pointer group relative overflow-hidden`}
             >
               {/* Rank number watermark */}
@@ -73,8 +73,8 @@ const Charts = () => {
               {/* Artwork */}
               <div className="relative w-full aspect-square overflow-hidden rounded-lg sm:rounded-[10px] mb-2 sm:mb-3">
                 <img
-                  src={song.attributes?.artwork?.url}
-                  alt={song.attributes?.name}
+                  src={song.coverUrl}
+                  alt={song.title}
                   className="w-full h-full object-cover"
                 />
                 <div className={`absolute inset-0 flex items-center justify-center bg-black/35 transition-opacity duration-200 ${
@@ -94,14 +94,14 @@ const Charts = () => {
               </div>
 
               {/* Info */}
-              <Link to={`/songs/${song.key}`}>
+              <Link to={`/songs/${song.id}`}>
                 <p className="text-[12px] sm:text-[14px] font-bold text-text-primary truncate hover:text-primary transition-colors">
-                  {song.attributes?.name}
+                  {song.title}
                 </p>
               </Link>
-              <Link to={song.artists ? `/artists/${song.artists[0]?.adamid}` : '#'}>
+              <Link to={song.artistId ? `/artists/${song.artistId}` : '#'}>
                 <p className="text-[10px] sm:text-[12px] text-text-muted truncate hover:text-primary transition-colors mt-0.5">
-                  {song.subtitle}
+                  {song.artistName}
                 </p>
               </Link>
             </div>
@@ -118,7 +118,7 @@ const Charts = () => {
 
             return (
               <div
-                key={song.key}
+                key={song.id}
                 className={`flex items-center gap-2.5 sm:gap-3 p-2 sm:p-2.5 rounded-lg sm:rounded-[10px] cursor-pointer transition-all duration-150 ${
                   playing ? 'bg-primary/8' : 'hover:bg-background-secondary'
                 }`}
@@ -131,8 +131,8 @@ const Charts = () => {
                 {/* Artwork */}
                 <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-lg overflow-hidden flex-shrink-0 relative group">
                   <img
-                    src={song.attributes?.artwork?.url || song.images?.coverart}
-                    alt={song.attributes?.name}
+                    src={song.coverUrl}
+                    alt={song.title}
                     className="w-full h-full object-cover"
                   />
                   <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity duration-150 ${
@@ -153,21 +153,21 @@ const Charts = () => {
 
                 {/* Song info */}
                 <div className="flex-1 min-w-0">
-                  <Link to={`/songs/${song.key}`}>
+                  <Link to={`/songs/${song.id}`}>
                     <p className="text-[13px] sm:text-sm font-semibold text-text-primary truncate hover:text-primary transition-colors">
-                      {song.attributes?.name || song.title}
+                      {song.title}
                     </p>
                   </Link>
-                  <Link to={song.artists ? `/artists/${song.artists[0]?.adamid}` : '#'}>
+                  <Link to={song.artistId ? `/artists/${song.artistId}` : '#'}>
                     <p className="text-[10px] sm:text-[11px] text-text-muted truncate hover:text-primary transition-colors mt-0.5">
-                      {song.subtitle}
+                      {song.artistName}
                     </p>
                   </Link>
                 </div>
 
                 {/* Genre badge */}
                 <span className="hidden sm:inline-flex retro-badge text-[9px] bg-card">
-                  {song.genres?.primary || 'Music'}
+                  {song.genre || 'Music'}
                 </span>
               </div>
             )

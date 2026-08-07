@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useSearchSongs } from '../hooks/useSupabase';
+import { useSearchSongs } from '../api';
 import Loader from '../components/Loader';
 import Error from '../components/Error';
 import SongCard from '../components/SongCard';
@@ -29,7 +29,7 @@ const Search = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
         {songs?.map((song, i) => (
           <SongCard
-            key={song.key}
+            key={song.id}
             song={song}
             isPlaying={isPlaying}
             activeSong={activeSong}

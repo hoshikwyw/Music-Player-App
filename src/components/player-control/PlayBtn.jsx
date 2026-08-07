@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useTrackPlay } from "../../hooks/useSupabase";
+import { useTrackPlay } from "../../api";
 
 const PlayBtn = ({
   activeSong,
@@ -15,18 +15,15 @@ const PlayBtn = ({
   const trackedRef = useRef(null);
   const { mutate: trackPlay } = useTrackPlay();
 
-  const audioSrc =
-    activeSong?.hub?.actions?.find((a) => a.type === "uri")?.uri ||
-    activeSong?.attributes?.previews?.[0]?.url ||
-    "";
+  const audioSrc = activeSong?.audioUrl || "";
 
-  // Track play count when song starts playing
+  // Count a play once per song, on first playback
   useEffect(() => {
-    if (isPlaying && activeSong?.key && trackedRef.current !== activeSong.key) {
-      trackedRef.current = activeSong.key;
-      trackPlay(activeSong.key);
+    if (isPlaying && activeSong?.id && trackedRef.current !== activeSong.id) {
+      trackedRef.current = activeSong.id;
+      trackPlay(activeSong.id);
     }
-  }, [isPlaying, activeSong?.key, trackPlay]);
+  }, [isPlaying, activeSong?.id, trackPlay]);
 
   // Handle play / pause
   useEffect(() => {

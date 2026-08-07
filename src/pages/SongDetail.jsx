@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import DetailsTitle from "../components/DetailsTitle";
 import { setActiveSong, playPause } from "../redux/services/PlayerSlice";
-import { useSongDetail, useRelatedSongs } from "../hooks/useSupabase";
+import { useSongDetail, useRelatedSongs } from "../api";
 import Loader from "../components/Loader";
 import Error from "../components/Error";
 import RelateSong from "../components/RelateSong";
@@ -13,35 +13,30 @@ const SongDetail = () => {
   const { songid } = useParams();
 
   const {
-    data: relatedData,
-    isFetching: isFetchingRelated,
+    data: song,
+    isLoading: isLoadingSong,
+    error: errorSong,
+  } = useSongDetail(songid);
+
+  const {
+    data: relatedSongs,
     isLoading: isLoadingRelated,
     error: errorRelated,
   } = useRelatedSongs(songid);
 
-  const {
-    data: songData,
-    isLoading: isLoadingSong,
-    isFetching: isFetchingSong,
-    error: errorSong,
-  } = useSongDetail(songid);
+  const handlePauseBtn = () => dispatch(playPause(false));
 
-  const handlePauseBtn = () => {
-    dispatch(playPause(false));
-  };
-
-  const handlePlayBtn = (song, i) => {
-    dispatch(setActiveSong({ song, data: relatedData, i }));
+  const handlePlayBtn = (selected, i) => {
+    dispatch(setActiveSong({ song: selected, data: relatedSongs, i }));
     dispatch(playPause(true));
   };
 
-  if (isFetchingSong || isFetchingRelated) return <Loader />;
   if (isLoadingSong || isLoadingRelated) return <Loader />;
-  if (errorRelated || errorSong) return <Error />;
+  if (errorSong || errorRelated) return <Error />;
 
   return (
     <div className="flex flex-col mt-2 sm:mt-4">
-      <DetailsTitle artistId="" songData={songData} />
+      <DetailsTitle song={song} />
 
       <div className="retro-card p-3 sm:p-4 mb-4 sm:mb-5">
         <h2 className="text-base sm:text-lg font-bold text-text-primary flex items-center gap-1.5 mb-2 sm:mb-3">
@@ -49,10 +44,13 @@ const SongDetail = () => {
           Lyrics
         </h2>
         <div className="retro-divider mb-2 sm:mb-3" />
-        {songData?.sections[1].type === "LYRICS" ? (
+        {song?.lyrics.length ? (
           <div className="space-y-0.5">
-            {songData?.sections[1].text.map((line, i) => (
-              <p key={i} className="text-[13px] sm:text-sm text-text-secondary leading-relaxed">
+            {song.lyrics.map((line, i) => (
+              <p
+                key={i}
+                className="text-[13px] sm:text-sm text-text-secondary leading-relaxed"
+              >
                 {line}
               </p>
             ))}
@@ -65,7 +63,7 @@ const SongDetail = () => {
       </div>
 
       <RelateSong
-        data={relatedData}
+        data={relatedSongs}
         isPlaying={isPlaying}
         activeSong={activeSong}
         handlePauseBtn={handlePauseBtn}

@@ -1,5 +1,5 @@
 import ArtistCard from '../components/ArtistCard'
-import { useArtists } from '../hooks/useSupabase'
+import { useArtists } from '../api'
 import Loader from '../components/Loader'
 import Error from '../components/Error'
 
@@ -19,8 +19,8 @@ const Artists = () => {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
-        {artists?.map((track) => (
-          <ArtistCard key={track.key} track={track} />
+        {artists?.map((artist) => (
+          <ArtistCard key={artist.id} artist={artist} />
         ))}
       </div>
     </div>

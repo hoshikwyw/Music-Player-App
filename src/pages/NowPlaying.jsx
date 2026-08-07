@@ -32,7 +32,7 @@ const NowPlaying = () => {
   const [showQueue, setShowQueue] = useState(false);
 
   useEffect(() => {
-    if (!activeSong?.attributes?.name) {
+    if (!activeSong?.id) {
       navigate("/");
     }
   }, [activeSong, navigate]);
@@ -75,7 +75,7 @@ const NowPlaying = () => {
   const progress = playTime > 0 ? (appTime / playTime) * 100 : 0;
   const volumeProgress = volume * 100;
 
-  if (!activeSong?.attributes?.name) return null;
+  if (!activeSong?.id) return null;
 
   return (
     <div className="flex flex-col items-center max-w-lg mx-auto w-full">
@@ -146,10 +146,10 @@ const NowPlaying = () => {
           style={{ animationPlayState: isPlaying ? "running" : "paused" }}
         >
           {/* Album art as disc background */}
-          {activeSong?.attributes?.artwork?.url ? (
+          {activeSong.coverUrl ? (
             <img
-              src={activeSong.attributes.artwork.url}
-              alt={activeSong.attributes.name}
+              src={activeSong.coverUrl}
+              alt={activeSong.title}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -176,17 +176,17 @@ const NowPlaying = () => {
 
       {/* Song Info */}
       <div className="w-full text-center mb-5 sm:mb-6 px-4">
-        <Link to={`/songs/${activeSong?.key}`}>
+        <Link to={`/songs/${activeSong.id}`}>
           <h2 className="text-xl sm:text-2xl font-bold text-text-primary truncate hover:text-primary transition-colors">
-            {activeSong?.attributes?.name}
+            {activeSong.title}
           </h2>
         </Link>
         <p className="text-sm text-text-muted mt-1 truncate">
-          {activeSong?.attributes?.artistName || activeSong?.subtitle || "Unknown artist"}
+          {activeSong.artistName || "Unknown artist"}
         </p>
-        {activeSong?.genres?.primary && (
+        {activeSong.genre && (
           <span className="retro-badge mt-2 inline-flex text-[10px] bg-primary/10 text-primary border-primary/30">
-            {activeSong.genres.primary}
+            {activeSong.genre}
           </span>
         )}
       </div>
@@ -300,7 +300,7 @@ const NowPlaying = () => {
           <div className="flex flex-col max-h-[240px] overflow-y-auto hide-scrollbar">
             {currentSongs.map((song, i) => (
               <div
-                key={`${song.key}-${i}`}
+                key={song.id}
                 className={`flex items-center gap-2.5 py-2 px-2 rounded-lg transition-colors ${
                   i === currentIndex ? "bg-primary/8" : "hover:bg-background-secondary"
                 }`}
@@ -314,17 +314,17 @@ const NowPlaying = () => {
                 </span>
                 <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0">
                   <img
-                    src={song.attributes?.artwork?.url || song.images?.coverart}
+                    src={song.coverUrl}
                     alt=""
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[12px] font-semibold text-text-primary truncate">
-                    {song.attributes?.name || song.title}
+                    {song.title}
                   </p>
                   <p className="text-[10px] text-text-muted truncate">
-                    {song.subtitle}
+                    {song.artistName}
                   </p>
                 </div>
               </div>

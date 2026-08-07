@@ -2,7 +2,7 @@ import { useState } from "react";
 import { genres } from "../assets/constants";
 import SongCard from "../components/SongCard";
 import RetroDropdown from "../components/RetroDropdown";
-import { useSongs } from "../hooks/useSupabase";
+import { useSongs } from "../api";
 import Loader from "../components/Loader";
 import Error from "../components/Error";
 import { useSelector } from "react-redux";
@@ -57,7 +57,7 @@ const Discover = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
             {paginatedData?.map((song, i) => (
               <SongCard
-                key={song.key}
+                key={song.id}
                 song={song}
                 data={data}
                 i={i}

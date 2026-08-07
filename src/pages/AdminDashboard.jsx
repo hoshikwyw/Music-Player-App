@@ -4,7 +4,7 @@ import {
   useAdminArtists, useAddArtist, useUpdateArtist, useDeleteArtist,
   useAdminAlbums, useAddAlbum, useUpdateAlbum, useDeleteAlbum,
   useCategories, useUploadFile,
-} from "../hooks/useSupabase";
+} from "../api";
 import {
   BsMusicNoteBeamed, BsPeopleFill, BsDisc, BsPlus, BsPencil,
   BsTrash, BsUpload, BsX, BsCheck, BsShieldLock,

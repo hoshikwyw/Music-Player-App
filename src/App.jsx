@@ -20,7 +20,7 @@ import RequireAdmin from './components/RequireAdmin'
 const App = () => {
   const { activeSong } = useSelector((state) => state.player)
   const location = useLocation()
-  const hasPlayer = !!activeSong?.attributes?.name
+  const hasPlayer = !!activeSong?.id
   const isNowPlaying = location.pathname === '/now-playing'
 
   return (

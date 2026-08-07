@@ -1,33 +1,50 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import DetailsTitle from "../components/DetailsTitle";
-import { useArtistDetail } from "../hooks/useSupabase";
+import { setActiveSong, playPause } from "../redux/services/PlayerSlice";
+import { useArtistDetail, useArtistSongs } from "../api";
 import Loader from "../components/Loader";
 import Error from "../components/Error";
 import RelateSong from "../components/RelateSong";
 
 const ArtistDetail = () => {
+  const dispatch = useDispatch();
   const { id: artistId } = useParams();
   const { activeSong, isPlaying } = useSelector((state) => state.player);
 
   const {
-    data: artistData,
+    data: artist,
     isLoading: isLoadingArtist,
-    isFetching: isFetchingArtist,
-    error: errorInArtist,
+    error: errorArtist,
   } = useArtistDetail(artistId);
 
-  if (isFetchingArtist) return <Loader />;
-  if (isLoadingArtist) return <Loader />;
-  if (errorInArtist) return <Error />;
+  const {
+    data: songs,
+    isLoading: isLoadingSongs,
+    error: errorSongs,
+  } = useArtistSongs(artistId);
+
+  const handlePauseBtn = () => dispatch(playPause(false));
+
+  const handlePlayBtn = (selected, i) => {
+    dispatch(setActiveSong({ song: selected, data: songs, i }));
+    dispatch(playPause(true));
+  };
+
+  if (isLoadingArtist || isLoadingSongs) return <Loader />;
+  if (errorArtist || errorSongs) return <Error />;
 
   return (
     <div className="flex flex-col mt-4">
-      <DetailsTitle artistId={artistId} artistData={artistData.data[0]} />
+      <DetailsTitle artist={artist} />
       <RelateSong
-        artistId={artistId}
+        title="Songs"
+        data={songs}
         isPlaying={isPlaying}
         activeSong={activeSong}
+        handlePauseBtn={handlePauseBtn}
+        handlePlayBtn={handlePlayBtn}
+        showAlbum
       />
     </div>
   );
