@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import {
   useAdminSongs, useAddSong, useUpdateSong, useDeleteSong,
   useAdminArtists, useAddArtist, useUpdateArtist, useDeleteArtist,
@@ -125,7 +125,7 @@ const Tab = ({ active, icon: Icon, label, count, onClick }) => (
 const ConfirmDelete = ({ name, onConfirm, onCancel }) => (
   <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div className="retro-card p-5 max-w-sm w-full">
-      <h3 className="font-bold text-text-primary mb-2">Delete "{name}"?</h3>
+      <h3 className="font-bold text-text-primary mb-2">Delete &quot;{name}&quot;?</h3>
       <p className="text-sm text-text-muted mb-4">This action cannot be undone.</p>
       <div className="flex gap-2 justify-end">
         <button onClick={onCancel} className="retro-btn-outline !text-xs !px-3 !py-1.5">Cancel</button>

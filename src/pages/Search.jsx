@@ -1,4 +1,3 @@
-import React from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useSearchSongs } from '../hooks/useSupabase';
@@ -23,7 +22,7 @@ const Search = () => {
           Results
         </h2>
         <p className="text-[10px] sm:text-[11px] text-text-muted mt-0.5">
-          Showing results for <span className="font-bold text-primary">"{searchTerm}"</span>
+          Showing results for <span className="font-bold text-primary">&quot;{searchTerm}&quot;</span>
         </p>
       </div>
 

@@ -5,14 +5,21 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply transition-colors duration-200;
-  }
-
   body {
     @apply bg-background text-text-primary font-retro;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  /* Scoped to interactive elements. A universal `*` rule forces a transition on
+     every node in the tree, which fights the compositor on large grids. */
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
   }
 }
 
@@ -20,7 +27,8 @@
   /* Retro Card */
   .retro-card {
     @apply bg-card border-2 border-border rounded-retro;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease,
+      background-color 0.2s ease, border-color 0.2s ease;
   }
   .retro-card-interactive {
     @apply retro-card shadow-retro-sm;
@@ -37,7 +45,8 @@
   /* Retro Button */
   .retro-btn {
     @apply bg-primary text-white font-semibold px-4 py-2 border-2 border-border rounded-retro-sm shadow-retro-sm cursor-pointer text-sm;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease,
+      background-color 0.15s ease, border-color 0.15s ease;
   }
   .retro-btn:hover {
     transform: translate(-1px, -1px);
@@ -56,7 +65,8 @@
   /* Retro Button Outline */
   .retro-btn-outline {
     @apply bg-card text-text-primary font-semibold px-4 py-2 border-2 border-border rounded-retro-sm shadow-retro-sm cursor-pointer text-sm;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease,
+      background-color 0.15s ease, border-color 0.15s ease;
   }
   .retro-btn-outline:hover {
     transform: translate(-1px, -1px);

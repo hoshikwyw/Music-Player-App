@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
+import { useState } from 'react';
+import { useTheme } from '../hooks/useTheme';
 import { HiOutlineColorSwatch } from 'react-icons/hi';
 import { BsCheck2 } from 'react-icons/bs';
 

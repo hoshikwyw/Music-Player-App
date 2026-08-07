@@ -188,6 +188,7 @@ export function useTrackPlay() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["charts"] });
       queryClient.invalidateQueries({ queryKey: ["topArtists"] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
       queryClient.invalidateQueries({ queryKey: ["topAlbums"] });
     },
   });
@@ -246,10 +247,11 @@ export function useTopAlbums() {
 // Artist hooks
 // ============================================
 
-// Fetch all artists (uses top_artists view for ranking)
+// Fetch all artists (uses top_artists view for ranking).
+// Distinct key from useTopArtists — that one is capped at 20, this one is not.
 export function useArtists() {
   return useQuery({
-    queryKey: ["topArtists"],
+    queryKey: ["artists", "all"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("top_artists")
@@ -496,6 +498,7 @@ export function useAddArtist() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "artists"] });
       queryClient.invalidateQueries({ queryKey: ["topArtists"] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
     },
   });
 }
@@ -510,6 +513,7 @@ export function useUpdateArtist() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "artists"] });
       queryClient.invalidateQueries({ queryKey: ["topArtists"] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
     },
   });
 }
@@ -524,6 +528,7 @@ export function useDeleteArtist() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "artists"] });
       queryClient.invalidateQueries({ queryKey: ["topArtists"] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
     },
   });
 }

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
 import ThemeSwitcher from './ThemeSwitcher';
 import { HiOutlineMenu } from 'react-icons/hi';
-import { useSidebar } from './Sidebar';
+import { useSidebar } from '../contexts/SidebarContext';
 
 const Searchbar = () => {
   const navigate = useNavigate();

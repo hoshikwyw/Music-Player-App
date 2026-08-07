@@ -1,4 +1,3 @@
-import React from 'react'
 import Sidebar from './components/Sidebar'
 import Searchbar from './components/Searchbar'
 import { Route, Routes, useLocation } from 'react-router-dom'
@@ -14,6 +13,8 @@ import Liked from './pages/Liked'
 import Search from './pages/Search'
 import NowPlaying from './pages/NowPlaying'
 import AdminDashboard from './pages/AdminDashboard'
+import NotFound from './pages/NotFound'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const App = () => {
   const { activeSong } = useSelector((state) => state.player)
@@ -32,18 +33,22 @@ const App = () => {
         {/* Content below fixed searchbar */}
         <div className="flex-1 flex lg:flex-row flex-col overflow-y-auto hide-scrollbar mt-[44px] sm:mt-[48px]">
           <div className={`flex-1 min-w-0 px-3 sm:px-4 md:px-5 pt-3 sm:pt-4 ${hasPlayer && !isNowPlaying ? 'pb-24 sm:pb-28' : 'pb-6'}`}>
-            <Routes>
-              <Route path='/' element={<Discover />} />
-              <Route path='/discover' element={<Discover />} />
-              <Route path='/artists/:id' element={<ArtistDetail />} />
-              <Route path='/songs/:songid' element={<SongDetail />} />
-              <Route path='/artists' element={<Artists />} />
-              <Route path='/charts' element={<Charts />} />
-              <Route path='/liked' element={<Liked />} />
-              <Route path='/search/:searchTerm' element={<Search />} />
-              <Route path='/now-playing' element={<NowPlaying />} />
-              <Route path='/superadmin' element={<AdminDashboard />} />
-            </Routes>
+            {/* Keyed by path so navigating away clears a crashed route */}
+            <ErrorBoundary key={location.pathname}>
+              <Routes>
+                <Route path='/' element={<Discover />} />
+                <Route path='/discover' element={<Discover />} />
+                <Route path='/artists/:id' element={<ArtistDetail />} />
+                <Route path='/songs/:songid' element={<SongDetail />} />
+                <Route path='/artists' element={<Artists />} />
+                <Route path='/charts' element={<Charts />} />
+                <Route path='/liked' element={<Liked />} />
+                <Route path='/search/:searchTerm' element={<Search />} />
+                <Route path='/now-playing' element={<NowPlaying />} />
+                <Route path='/superadmin' element={<AdminDashboard />} />
+                <Route path='*' element={<NotFound />} />
+              </Routes>
+            </ErrorBoundary>
           </div>
           <div className="hidden lg:block lg:sticky lg:top-0 self-start lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto hide-scrollbar flex-shrink-0 lg:pr-4 lg:pt-4">
             <TopPlay />

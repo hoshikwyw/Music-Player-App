@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { BsChevronDown, BsCheck2 } from "react-icons/bs";
 
 const RetroDropdown = ({ options, value, onChange, placeholder = "Select..." }) => {

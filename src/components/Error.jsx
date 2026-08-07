@@ -1,4 +1,3 @@
-import React from 'react'
 import { BsExclamationTriangle } from 'react-icons/bs'
 
 const Error = () => {

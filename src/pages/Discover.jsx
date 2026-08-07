@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { genres } from "../assets/constants";
 import SongCard from "../components/SongCard";
 import RetroDropdown from "../components/RetroDropdown";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { nextSong, playPause, prevSong } from "../redux/services/PlayerSlice";
@@ -37,8 +37,12 @@ const NowPlaying = () => {
     }
   }, [activeSong, navigate]);
 
+  // Auto-play on track change only. Adding currentSongs.length would restart
+  // playback whenever the queue is refetched.
+  // TODO: remove once playback moves into a single shared audio engine.
   useEffect(() => {
     if (currentSongs.length) dispatch(playPause(true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex]);
 
   const handlePlayPause = () => {

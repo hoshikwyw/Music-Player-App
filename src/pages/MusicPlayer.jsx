@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Track from "../components/player-control/Track";
 import ControlBtns from "../components/player-control/ControlBtns";
 import Seekbar from "../components/player-control/Seekbar";
@@ -18,8 +18,12 @@ const MusicPlayer = () => {
   const [shuffle, setShuffle] = useState(false);
   const dispatch = useDispatch();
 
+  // Auto-play on track change only. Adding currentSongs.length would restart
+  // playback whenever the queue is refetched.
+  // TODO: remove once playback moves into a single shared audio engine.
   useEffect(() => {
     if (currentSongs.length) dispatch(playPause(true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex]);
 
   const handlePlayPause = () => {
@@ -75,8 +79,6 @@ const MusicPlayer = () => {
             min="0"
             max={playTime}
             onInput={(event) => setSeekTime(event.target.value)}
-            setSeekTime={setSeekTime}
-            appTime={appTime}
           />
         </div>
         <PlayBtn

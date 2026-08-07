@@ -1,4 +1,3 @@
-import React from "react";
 import PlayPause from "./PlayPause";
 import { playPause, setActiveSong } from "../redux/services/PlayerSlice";
 import { Link } from "react-router-dom";

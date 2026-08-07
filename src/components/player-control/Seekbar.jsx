@@ -1,6 +1,5 @@
-import React from "react";
 
-const Seekbar = ({ value, min, max, onInput, setSeekTime, appTime }) => {
+const Seekbar = ({ value, min, max, onInput }) => {
   const getTime = (time) =>
     `${Math.floor(time / 60)}:${`0${Math.floor(time % 60)}`.slice(-2)}`;
 

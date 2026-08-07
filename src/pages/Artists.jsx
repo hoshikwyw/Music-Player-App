@@ -1,12 +1,9 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
 import ArtistCard from '../components/ArtistCard'
 import { useArtists } from '../hooks/useSupabase'
 import Loader from '../components/Loader'
 import Error from '../components/Error'
 
 const Artists = () => {
-  const { activeSong, isPlaying } = useSelector(state => state.player)
   const { data: artists, isLoading, error } = useArtists()
 
   if (isLoading) return <Loader />

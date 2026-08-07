@@ -1,50 +1,69 @@
 # Kayv Vibe
 
-A retro-themed music player web application built with React, featuring a vintage UI design with thick borders, offset shadows, and warm orange accents.
+A personal music player web app built with React and Supabase.
 
 ![React](https://img.shields.io/badge/React-18.3-blue)
 ![Vite](https://img.shields.io/badge/Vite-5.4-purple)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-teal)
-![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-2.2-violet)
+![Supabase](https://img.shields.io/badge/Supabase-2.103-green)
 
 ## Features
 
 - **Music Discovery** - Browse songs by genre with pagination
 - **Search** - Search songs and artists
-- **Artist & Song Details** - View artist info, song lyrics, and related tracks
-- **Music Player** - Play/pause, next/prev, shuffle, repeat, seek, and volume controls
-- **Charts & Liked Songs** - Top charts and favorites collection
-- **5 Retro Themes** - Orange, Dark, Mint, Purple, and Rose color schemes
-- **Fully Responsive** - Optimized for mobile, tablet, and desktop
-- **Shazam API Integration** - With automatic mock data fallback
+- **Artist & Song Details** - Artist info, lyrics, and related tracks
+- **Music Player** - Play/pause, next/prev, shuffle, repeat, seek, volume
+- **Now Playing** - Full-screen player with spinning disc and queue
+- **Charts & Liked Songs** - Play-count rankings and favorites
+- **Admin Dashboard** - CRUD for songs, artists, and albums with file upload
+- **5 Themes** - Orange, Dark, Mint, Purple, and Rose color schemes
+- **Fully Responsive** - Mobile, tablet, and desktop
 
 ## Tech Stack
 
 | Technology | Purpose |
 |---|---|
 | React 18 | UI framework |
-| Redux Toolkit + RTK Query | State management & API fetching |
+| Supabase | Postgres database, storage, and auth |
+| TanStack Query v5 | Server state, caching, and mutations |
+| Redux Toolkit | Playback state (queue, active song) |
 | React Router v6 | Client-side routing |
 | Tailwind CSS 3 | Utility-first styling |
 | Vite 5 | Build tool & dev server |
 | Swiper | Artist carousel |
 | React Icons | Icon library |
-| Space Grotesk + Space Mono | Retro typography |
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
+- A Supabase project
 
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/Music-Player-App.git
-cd Music-Player-App
 npm install
+cp .env.example .env
 ```
+
+Fill in `.env` with your Supabase project credentials:
+
+```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+VITE_ADMIN_SECRET=your-secret-admin-key
+```
+
+### Database setup
+
+Run `supabase-schema.sql` in the Supabase SQL editor. It creates the tables
+(`categories`, `artists`, `albums`, `songs`, `play_history`, `liked_songs`,
+`artist_categories`), the ranking views (`top_charts`, `top_artists`,
+`top_albums`), the `increment_play_count` function, and the RLS policies.
+
+You also need two public storage buckets: one for audio files and one for
+cover art.
 
 ### Development
 
@@ -52,7 +71,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open [http://localhost:5173](http://localhost:5173).
 
 ### Build
 
@@ -84,38 +103,55 @@ src/
 │   ├── DetailsTitle.jsx     # Detail page header
 │   ├── RetroDropdown.jsx    # Custom dropdown component
 │   ├── ThemeSwitcher.jsx    # Theme selection dropdown
+│   ├── ErrorBoundary.jsx    # Catches render crashes per route
 │   ├── Loader.jsx           # Loading spinner
 │   └── Error.jsx            # Error state
 ├── contexts/
 │   └── ThemeContext.jsx     # Theme management with CSS variables
+├── hooks/
+│   └── useSupabase.js       # All TanStack Query hooks & mutations
+├── lib/
+│   └── supabase.js          # Supabase client
 ├── pages/
 │   ├── Discover.jsx         # Genre-filtered songs with pagination
-│   ├── Artists.jsx          # Top artists grid
-│   ├── Charts.jsx           # Chart songs grid
+│   ├── Artists.jsx          # Artists grid
+│   ├── Charts.jsx           # Top charts
 │   ├── Liked.jsx            # Liked songs grid
-│   ├── ArtistDetail.jsx     # Artist detail + related songs
+│   ├── ArtistDetail.jsx     # Artist detail + songs
 │   ├── SongDetail.jsx       # Song detail + lyrics + related songs
 │   ├── Search.jsx           # Search results
-│   └── MusicPlayer.jsx      # Bottom player bar
+│   ├── NowPlaying.jsx       # Full-screen player
+│   ├── MusicPlayer.jsx      # Bottom player bar
+│   ├── AdminDashboard.jsx   # Content management
+│   └── NotFound.jsx         # 404 state
 ├── redux/
 │   ├── store.js             # Redux store configuration
 │   └── services/
-│       ├── PlayerSlice.js   # Player state (queue, playback)
-│       └── dataFetch.js     # RTK Query API + mock fallback
-├── mocks/                   # Mock data (tracks, charts, artists, liked)
+│       └── PlayerSlice.js   # Player state (queue, playback)
 ├── main.jsx                 # App entry point
-└── index.css                # Global styles & retro design system
+└── index.css                # Global styles & design system
 ```
+
+## Data Layer
+
+All data access goes through TanStack Query hooks in `src/hooks/useSupabase.js`.
+Supabase rows are mapped into the shape components consume by the `transform*`
+functions at the top of that file.
+
+Public read hooks: `useSongs`, `useSongDetail`, `useRelatedSongs`,
+`useSearchSongs`, `useChartSongs`, `useTopArtists`, `useTopAlbums`,
+`useArtists`, `useArtistDetail`, `useArtistSongs`, `useAlbumDetail`,
+`useCategories`, `useLikedSongs`.
+
+Mutations: `useTrackPlay`, `useLikeSong`, `useUnlikeSong`, and the admin
+`useAdd*` / `useUpdate*` / `useDelete*` families plus `useUploadFile`.
 
 ## Design System
 
-### Retro Components
+Custom component classes defined in `index.css`:
 
-The app uses a custom retro design system defined in `index.css`:
-
-- **`.retro-card`** - Card with border and rounded corners
-- **`.retro-card-interactive`** - Card with hover lift + shadow effect
-- **`.retro-btn`** - Button with offset shadow and press animation
+- **`.retro-card`** / **`.retro-card-interactive`** - Cards, the latter with hover lift
+- **`.retro-btn`** / **`.retro-btn-outline`** - Buttons with offset shadow
 - **`.retro-input`** - Input with thick border and focus glow
 - **`.retro-badge`** - Small pill label
 - **`.retro-range`** - Custom styled range slider
@@ -123,7 +159,8 @@ The app uses a custom retro design system defined in `index.css`:
 
 ### Themes
 
-5 built-in themes switchable via the palette icon in the search bar:
+Themes swap CSS custom properties on `:root` and persist to `localStorage`.
+Switchable via the palette icon in the search bar.
 
 | Theme | Primary Color | Background |
 |---|---|---|
@@ -141,17 +178,14 @@ The app uses a custom retro design system defined in `index.css`:
 | Tablet (768-1023px) | Fixed sidebar | Hidden | 3 columns |
 | Desktop (1024px+) | Fixed sidebar | Right sidebar | 3-4 columns |
 
-## API
+## Security Notes
 
-The app uses the [Shazam API](https://rapidapi.com/apidojo/api/shazam) via RapidAPI for:
-
-- Chart tracks by genre
-- Song details & lyrics
-- Artist details
-- Related songs
-- Search
-
-When the API is unavailable or rate-limited, it automatically falls back to local mock data in `src/mocks/`.
+The admin dashboard at `/superadmin` is currently gated by a client-side key
+check only. `VITE_ADMIN_SECRET` is inlined into the production bundle by Vite,
+and the RLS policies in `supabase-schema.sql` permit public insert, update, and
+delete on `songs`, `artists`, and `albums`. Do not deploy publicly until the
+admin routes are behind Supabase Auth and those policies are restricted to an
+authenticated role.
 
 ## Scripts
 

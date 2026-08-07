@@ -1,21 +1,7 @@
-import React, { useState, createContext, useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { links } from "../assets/constants";
 import { RiCloseLine } from "react-icons/ri";
-
-
-const SidebarContext = createContext();
-
-export const useSidebar = () => useContext(SidebarContext);
-
-export const SidebarProvider = ({ children }) => {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  return (
-    <SidebarContext.Provider value={{ mobileOpen, setMobileOpen, toggle: () => setMobileOpen(v => !v) }}>
-      {children}
-    </SidebarContext.Provider>
-  );
-};
+import { useSidebar } from "../contexts/SidebarContext";
 
 const NavLinks = ({ handleClick }) => (
   <div className="mt-5 flex flex-col gap-0.5">
