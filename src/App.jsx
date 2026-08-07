@@ -35,11 +35,19 @@ const App = () => {
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0 min-h-screen md:ml-[210px]">
-        <header className="fixed top-0 right-0 left-0 md:left-[210px] z-20">
-          <Searchbar />
-        </header>
+        {/* Now Playing carries its own header, and a search field on top of an
+            immersive player is noise. */}
+        {!isNowPlaying && (
+          <header className="fixed top-0 right-0 left-0 md:left-[210px] z-20">
+            <Searchbar />
+          </header>
+        )}
 
-        <div className="flex-1 flex lg:flex-row flex-col overflow-y-auto hide-scrollbar mt-[48px]">
+        <div
+          className={`flex-1 flex lg:flex-row flex-col overflow-y-auto hide-scrollbar ${
+            isNowPlaying ? 'mt-0' : 'mt-[48px]'
+          }`}
+        >
           <main
             className={`flex-1 min-w-0 px-3 sm:px-4 md:px-5 pt-4 ${
               showDock ? 'pb-32 sm:pb-36' : 'pb-8'
@@ -70,13 +78,17 @@ const App = () => {
             </ErrorBoundary>
           </main>
 
-          <aside
-            className={`hidden lg:block lg:sticky lg:top-0 self-start lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto hide-scrollbar flex-shrink-0 lg:pr-4 lg:pt-4 ${
-              showDock ? 'lg:pb-32' : 'lg:pb-8'
-            }`}
-          >
-            <TopPlay />
-          </aside>
+          {/* Hidden on Now Playing -- a charts rail alongside the immersive
+              player undercuts the whole point of that screen. */}
+          {!isNowPlaying && (
+            <aside
+              className={`hidden lg:block lg:sticky lg:top-0 self-start lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto hide-scrollbar flex-shrink-0 lg:pr-4 lg:pt-4 ${
+                showDock ? 'lg:pb-32' : 'lg:pb-8'
+              }`}
+            >
+              <TopPlay />
+            </aside>
+          )}
         </div>
       </div>
 

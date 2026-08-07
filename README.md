@@ -105,7 +105,9 @@ src/
 ├── components/
 │   ├── player-control/
 │   │   ├── AudioEngine.jsx  # The single <audio> element
-│   │   ├── Track.jsx        # Now-playing track info
+│   │   ├── VinylDisc.jsx    # Spinning record on Now Playing
+│   │   ├── QueueSheet.jsx   # Up-next list
+│   │   ├── Track.jsx        # Dock track info
 │   │   ├── ControlBtns.jsx  # Play/pause/skip/shuffle/repeat
 │   │   ├── Seekbar.jsx      # Progress bar with timestamps
 │   │   └── Volumebar.jsx    # Volume slider
@@ -115,6 +117,7 @@ src/
 │   │   ├── GlassSlider.jsx  # Seek / volume slider primitive
 │   │   └── Dropdown.jsx     # Glass dropdown
 │   ├── AmbientBackdrop.jsx  # Drifting colour fields behind the glass
+│   ├── LikeButton.jsx       # Like / unlike toggle
 │   ├── Sidebar.jsx          # Fixed sidebar with navigation
 │   ├── Searchbar.jsx        # Fixed search bar with theme switcher
 │   ├── TopPlay.jsx          # Charts sidebar & artist carousel
@@ -197,9 +200,7 @@ song list. Two hooks that run different queries must never share a key.
 
 ### Not yet wired to UI
 
-`useTopAlbums`, `useAlbumDetail`, `useLikeSong`, and `useUnlikeSong` work but
-have no component using them — there is currently no way to like a song from
-the interface.
+`useTopAlbums` and `useAlbumDetail` work but have no component using them.
 
 ## Playback
 
@@ -270,11 +271,22 @@ The dock is the only elevation-3 surface in the main layout — it is the closes
 thing to the viewer. Its play button is the one solid fill on screen, so the
 primary action reads first against all the translucency.
 
+### Now Playing
+
+The immersive screen. It hides both the app search bar and the charts rail —
+it carries its own header, and chrome alongside an immersive player defeats
+the point. The record's spin animation is always applied and paused via
+`animationPlayState`, so pausing freezes it in place rather than snapping back
+to 0°; the spindle sits outside the rotating element because a real one does
+not turn with the record.
+
 ### Legacy classes
 
 The `retro-*` classes still exist in `index.css`, redefined on top of the glass
 base so un-migrated pages inherit the new look automatically. They are being
-removed page by page; content components and `NowPlaying` still use them.
+removed page by page; the content components (`SongCard`, `SongBar`,
+`TopPlayCard`, `ArtistCard`, `DetailsTitle`) and the list pages still use
+them.
 
 **Rules**
 

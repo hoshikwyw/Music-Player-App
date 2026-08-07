@@ -18,6 +18,13 @@ export function useLikedSongs() {
   });
 }
 
+// Reads from the same cached list the Liked page uses, so this costs no extra
+// request once that query has run.
+export function useIsLiked(songId) {
+  const { data } = useLikedSongs();
+  return Boolean(songId && data?.some((song) => song.id === songId));
+}
+
 export function useLikeSong() {
   const queryClient = useQueryClient();
 
