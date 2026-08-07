@@ -147,7 +147,8 @@ src/
 ├── redux/
 │   ├── store.js             # Redux store configuration
 │   └── services/
-│       └── PlayerSlice.js   # Player state (queue, playback)
+│       ├── PlayerSlice.js      # All player state
+│       └── playerSelectors.js  # Narrow selectors (see Playback)
 ├── main.jsx                 # App entry point
 └── index.css                # Global styles & design system
 ```
@@ -187,6 +188,37 @@ song list. Two hooks that run different queries must never share a key.
 `useTopAlbums`, `useAlbumDetail`, `useLikeSong`, and `useUnlikeSong` work but
 have no component using them — there is currently no way to like a song from
 the interface.
+
+## Playback
+
+There is exactly **one** `<audio>` element in the app, owned by
+`AudioEngine` and mounted in `App.jsx` outside the routes so playback survives
+navigation. No other component may create an `<audio>` tag.
+
+- **State** lives entirely in `PlayerSlice` — queue, index, transport, volume,
+  mute, repeat, shuffle, progress, duration. Volume persists to `localStorage`.
+- **Actions** go through `usePlayerControls()`, never raw dispatches:
+  `playSong, play, pause, toggle, next, prev, seek, setVolume, toggleMute,
+  toggleRepeat, toggleShuffle`.
+- **Seeking** uses a `{ time, token }` pair. The token increments on every
+  request so seeking twice to the same position still applies.
+- **Repeat** sets the audio element's native `loop`, so `onEnded` never fires —
+  that is repeat-one, by design.
+- **Shuffle** picks any index except the current one, so the same track never
+  repeats back-to-back.
+
+### Selecting player state
+
+`AudioEngine` dispatches `setProgress` on every `timeupdate` (~4x/second), so
+`state.player` changes identity that often. Components that only need to know
+what is playing must use the narrow selectors:
+
+```js
+const { activeSong, isPlaying } = useNowPlaying();  // not useSelector(s => s.player)
+```
+
+Selecting the whole slice re-renders that component four times a second. Only
+`MusicPlayer` and `NowPlaying` do it, because they render the seek bar.
 
 ## Design System
 

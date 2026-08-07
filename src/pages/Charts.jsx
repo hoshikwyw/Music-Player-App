@@ -1,24 +1,18 @@
-import { useSelector, useDispatch } from 'react-redux'
+import { useNowPlaying } from "../redux/services/playerSelectors";
 import { Link } from 'react-router-dom'
-import { playPause, setActiveSong } from '../redux/services/PlayerSlice'
+import { usePlayerControls } from '../hooks/usePlayerControls'
 import { BsFillPlayFill, BsFillPauseFill, BsTrophy } from 'react-icons/bs'
 import { useChartSongs } from '../api'
 import Loader from '../components/Loader'
 import Error from '../components/Error'
 
 const Charts = () => {
-  const dispatch = useDispatch()
-  const { activeSong, isPlaying } = useSelector(state => state.player)
+  const controls = usePlayerControls()
+  const { activeSong, isPlaying } = useNowPlaying();
   const { data: chartSongs, isLoading, error } = useChartSongs()
 
-  const handlePlay = (song, i) => {
-    dispatch(setActiveSong({ song, data: chartSongs, i }))
-    dispatch(playPause(true))
-  }
-
-  const handlePause = () => {
-    dispatch(playPause(false))
-  }
+  const handlePlay = (song, i) => controls.playSong(song, chartSongs, i)
+  const handlePause = () => controls.pause()
 
   const isCurrentSong = (song) => activeSong?.id === song.id
 

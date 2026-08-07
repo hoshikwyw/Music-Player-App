@@ -1,16 +1,16 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useNowPlaying } from "../redux/services/playerSelectors";
 import { useParams } from "react-router-dom";
 import DetailsTitle from "../components/DetailsTitle";
-import { setActiveSong, playPause } from "../redux/services/PlayerSlice";
+import { usePlayerControls } from "../hooks/usePlayerControls";
 import { useArtistDetail, useArtistSongs } from "../api";
 import Loader from "../components/Loader";
 import Error from "../components/Error";
 import RelateSong from "../components/RelateSong";
 
 const ArtistDetail = () => {
-  const dispatch = useDispatch();
+  const controls = usePlayerControls();
   const { id: artistId } = useParams();
-  const { activeSong, isPlaying } = useSelector((state) => state.player);
+  const { activeSong, isPlaying } = useNowPlaying();
 
   const {
     data: artist,
@@ -24,12 +24,8 @@ const ArtistDetail = () => {
     error: errorSongs,
   } = useArtistSongs(artistId);
 
-  const handlePauseBtn = () => dispatch(playPause(false));
-
-  const handlePlayBtn = (selected, i) => {
-    dispatch(setActiveSong({ song: selected, data: songs, i }));
-    dispatch(playPause(true));
-  };
+  const handlePauseBtn = () => controls.pause();
+  const handlePlayBtn = (selected, i) => controls.playSong(selected, songs, i);
 
   if (isLoadingArtist || isLoadingSongs) return <Loader />;
   if (errorArtist || errorSongs) return <Error />;

@@ -4,18 +4,20 @@ import {
   BsFillVolumeMuteFill,
 } from "react-icons/bs";
 
-const Volumebar = ({ value, min, max, onChange, setVolume }) => {
-  const progress = value * 100;
+const Volumebar = ({ value, isMuted, onChange, onToggleMute }) => {
+  const effective = isMuted ? 0 : value;
+  const progress = effective * 100;
 
   return (
     <div className="hidden lg:flex items-center gap-1.5 w-[140px] justify-end">
       <button
-        onClick={() => setVolume(value === 0 ? 0.5 : 0)}
+        onClick={onToggleMute}
+        aria-label={isMuted ? "Unmute" : "Mute"}
         className="w-7 h-7 flex items-center justify-center rounded-full text-text-muted hover:text-primary transition-colors"
       >
-        {value <= 1 && value > 0.5 && <BsFillVolumeUpFill size={15} />}
-        {value <= 0.5 && value > 0 && <BsVolumeDownFill size={15} />}
-        {value === 0 && <BsFillVolumeMuteFill size={15} />}
+        {effective > 0.5 && <BsFillVolumeUpFill size={15} />}
+        {effective > 0 && effective <= 0.5 && <BsVolumeDownFill size={15} />}
+        {effective === 0 && <BsFillVolumeMuteFill size={15} />}
       </button>
       <div className="flex-1 relative h-5 flex items-center group cursor-pointer">
         <div className="w-full h-1 rounded-full bg-background-tertiary overflow-hidden">
@@ -27,10 +29,11 @@ const Volumebar = ({ value, min, max, onChange, setVolume }) => {
         <input
           type="range"
           step="any"
-          value={value}
-          min={min}
-          max={max}
-          onChange={onChange}
+          value={effective}
+          min={0}
+          max={1}
+          onChange={(event) => onChange(event.target.value)}
+          aria-label="Volume"
           className="absolute inset-0 w-full opacity-0 cursor-pointer"
         />
         <div

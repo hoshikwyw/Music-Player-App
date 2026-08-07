@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux'
+import { useNowPlaying } from "../redux/services/playerSelectors";
 import SongCard from '../components/SongCard'
 import { useLikedSongs } from '../api'
 import { BsHeartFill } from 'react-icons/bs'
@@ -6,7 +6,7 @@ import Loader from '../components/Loader'
 import Error from '../components/Error'
 
 const Liked = () => {
-  const { activeSong, isPlaying } = useSelector((state) => state.player)
+  const { activeSong, isPlaying } = useNowPlaying();
   const { data: likedSongs, isLoading, error } = useLikedSongs()
 
   if (isLoading) return <Loader />

@@ -7,7 +7,7 @@ import Artists from "./pages/Artists"
 import SongDetail from "./pages/SongDetail"
 import TopPlay from './components/TopPlay'
 import MusicPlayer from './pages/MusicPlayer'
-import { useSelector } from 'react-redux'
+import { useActiveSong } from './redux/services/playerSelectors'
 import Charts from './pages/Charts'
 import Liked from './pages/Liked'
 import Search from './pages/Search'
@@ -16,15 +16,18 @@ import AdminDashboard from './pages/AdminDashboard'
 import NotFound from './pages/NotFound'
 import ErrorBoundary from './components/ErrorBoundary'
 import RequireAdmin from './components/RequireAdmin'
+import AudioEngine from './components/player-control/AudioEngine'
 
 const App = () => {
-  const { activeSong } = useSelector((state) => state.player)
+  const activeSong = useActiveSong()
   const location = useLocation()
   const hasPlayer = !!activeSong?.id
   const isNowPlaying = location.pathname === '/now-playing'
 
   return (
     <div className="relative flex min-h-screen bg-background">
+      {/* Mounted once, outside the routes, so playback survives navigation */}
+      <AudioEngine />
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 min-h-screen md:ml-[210px]">
         {/* Fixed searchbar */}

@@ -1,18 +1,13 @@
 import PlayPause from "./PlayPause";
-import { playPause, setActiveSong } from "../redux/services/PlayerSlice";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { usePlayerControls } from "../hooks/usePlayerControls";
 
 const SongCard = ({ song, i, isPlaying, activeSong, data }) => {
-  const dispatch = useDispatch();
+  const controls = usePlayerControls();
   const isCurrent = activeSong?.id === song.id;
 
-  const handlePause = () => dispatch(playPause(false));
-
-  const handlePlay = () => {
-    dispatch(setActiveSong({ song, data, i }));
-    dispatch(playPause(true));
-  };
+  const handlePause = () => controls.pause();
+  const handlePlay = () => controls.playSong(song, data, i);
 
   return (
     <div className="animate-slideup">

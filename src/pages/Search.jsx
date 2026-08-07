@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useNowPlaying } from "../redux/services/playerSelectors";
 import { useParams } from 'react-router-dom';
 import { useSearchSongs } from '../api';
 import Loader from '../components/Loader';
@@ -8,7 +8,7 @@ import { FiSearch } from 'react-icons/fi';
 
 const Search = () => {
   const { searchTerm } = useParams();
-  const { activeSong, isPlaying } = useSelector((state) => state.player);
+  const { activeSong, isPlaying } = useNowPlaying();
   const { data: songs, isFetching, error, isLoading } = useSearchSongs(searchTerm);
 
   if (isFetching || isLoading) return <Loader />;

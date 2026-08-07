@@ -1,15 +1,15 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useNowPlaying } from "../redux/services/playerSelectors";
 import { useParams } from "react-router-dom";
 import DetailsTitle from "../components/DetailsTitle";
-import { setActiveSong, playPause } from "../redux/services/PlayerSlice";
+import { usePlayerControls } from "../hooks/usePlayerControls";
 import { useSongDetail, useRelatedSongs } from "../api";
 import Loader from "../components/Loader";
 import Error from "../components/Error";
 import RelateSong from "../components/RelateSong";
 
 const SongDetail = () => {
-  const dispatch = useDispatch();
-  const { activeSong, isPlaying } = useSelector((state) => state.player);
+  const controls = usePlayerControls();
+  const { activeSong, isPlaying } = useNowPlaying();
   const { songid } = useParams();
 
   const {
@@ -24,12 +24,9 @@ const SongDetail = () => {
     error: errorRelated,
   } = useRelatedSongs(songid);
 
-  const handlePauseBtn = () => dispatch(playPause(false));
-
-  const handlePlayBtn = (selected, i) => {
-    dispatch(setActiveSong({ song: selected, data: relatedSongs, i }));
-    dispatch(playPause(true));
-  };
+  const handlePauseBtn = () => controls.pause();
+  const handlePlayBtn = (selected, i) =>
+    controls.playSong(selected, relatedSongs, i);
 
   if (isLoadingSong || isLoadingRelated) return <Loader />;
   if (errorSong || errorRelated) return <Error />;

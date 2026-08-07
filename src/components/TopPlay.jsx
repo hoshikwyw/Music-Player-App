@@ -1,17 +1,17 @@
+import { useNowPlaying } from "../redux/services/playerSelectors";
 import { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/free-mode";
-import { playPause, setActiveSong } from "../redux/services/PlayerSlice";
+import { usePlayerControls } from "../hooks/usePlayerControls";
 import { Link } from "react-router-dom";
 import TopPlayCard from "./TopPlayCard";
 import { useChartSongs, useTopArtists } from "../api";
 
 const TopPlay = () => {
-  const dispatch = useDispatch();
-  const { activeSong, isPlaying } = useSelector((state) => state.player);
+  const controls = usePlayerControls();
+  const { activeSong, isPlaying } = useNowPlaying();
   const divRef = useRef(null);
 
   const { data: chartSongs } = useChartSongs();
@@ -26,14 +26,8 @@ const TopPlay = () => {
   const topPlays = chartSongs?.slice(0, 5) || [];
   const topArtists = artistsData?.slice(0, 8) || [];
 
-  const handlePauseBtn = () => {
-    dispatch(playPause(false));
-  };
-
-  const handlePlayBtn = (song, i) => {
-    dispatch(setActiveSong({ song, data: topPlays, i }));
-    dispatch(playPause(true));
-  };
+  const handlePauseBtn = () => controls.pause();
+  const handlePlayBtn = (song, i) => controls.playSong(song, topPlays, i);
 
   return (
     <div

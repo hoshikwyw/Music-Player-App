@@ -1,14 +1,12 @@
+import { formatTime } from "../../lib/formatTime";
 
-const Seekbar = ({ value, min, max, onInput }) => {
-  const getTime = (time) =>
-    `${Math.floor(time / 60)}:${`0${Math.floor(time % 60)}`.slice(-2)}`;
-
+const Seekbar = ({ value, max, onSeek }) => {
   const progress = max > 0 ? (value / max) * 100 : 0;
 
   return (
     <div className="flex items-center gap-1.5 sm:gap-2 w-full max-w-lg">
       <span className="text-[9px] sm:text-[10px] text-text-muted font-retro-mono w-6 sm:w-8 text-right tabular-nums">
-        {value === 0 ? "0:00" : getTime(value)}
+        {formatTime(value)}
       </span>
       <div className="flex-1 relative h-4 sm:h-5 flex items-center group cursor-pointer">
         <div className="w-full h-[3px] sm:h-1 rounded-full bg-background-tertiary overflow-hidden">
@@ -21,9 +19,10 @@ const Seekbar = ({ value, min, max, onInput }) => {
           type="range"
           step="any"
           value={value}
-          min={min}
-          max={max}
-          onInput={onInput}
+          min={0}
+          max={max || 0}
+          onChange={(event) => onSeek(event.target.value)}
+          aria-label="Seek"
           className="absolute inset-0 w-full opacity-0 cursor-pointer"
         />
         <div
@@ -32,7 +31,7 @@ const Seekbar = ({ value, min, max, onInput }) => {
         />
       </div>
       <span className="text-[9px] sm:text-[10px] text-text-muted font-retro-mono w-6 sm:w-8 tabular-nums">
-        {max === 0 ? "0:00" : getTime(max)}
+        {formatTime(max)}
       </span>
     </div>
   );

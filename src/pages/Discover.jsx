@@ -1,3 +1,4 @@
+import { useNowPlaying } from "../redux/services/playerSelectors";
 import { useState } from "react";
 import { genres } from "../assets/constants";
 import SongCard from "../components/SongCard";
@@ -5,12 +6,11 @@ import RetroDropdown from "../components/RetroDropdown";
 import { useSongs } from "../api";
 import Loader from "../components/Loader";
 import Error from "../components/Error";
-import { useSelector } from "react-redux";
 
 const Discover = () => {
   const [genre, setGenre] = useState("POP");
   const [page, setPage] = useState(1);
-  const { activeSong, isPlaying } = useSelector((state) => state.player);
+  const { activeSong, isPlaying } = useNowPlaying();
 
   const { data, isFetching, isLoading, error } = useSongs(genre);
 

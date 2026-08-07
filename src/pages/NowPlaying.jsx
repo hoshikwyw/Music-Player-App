@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { nextSong, playPause, prevSong } from "../redux/services/PlayerSlice";
-import PlayBtn from "../components/player-control/PlayBtn";
 import {
   BsFillPauseFill,
   BsFillPlayFill,
@@ -16,66 +14,36 @@ import {
   BsFillVolumeMuteFill,
 } from "react-icons/bs";
 import { MdSkipNext, MdSkipPrevious, MdQueueMusic } from "react-icons/md";
+import { usePlayerControls } from "../hooks/usePlayerControls";
+import { formatTime } from "../lib/formatTime";
 
 const NowPlaying = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { activeSong, currentSongs, currentIndex, isPlaying, isActive } =
-    useSelector((state) => state.player);
+  const controls = usePlayerControls();
+  const {
+    activeSong,
+    currentSongs,
+    currentIndex,
+    isPlaying,
+    volume,
+    isMuted,
+    repeat,
+    shuffle,
+    progress,
+    duration,
+  } = useSelector((state) => state.player);
 
-  const [playTime, setPlayTime] = useState(0);
-  const [seekTime, setSeekTime] = useState(0);
-  const [appTime, setAppTime] = useState(0);
-  const [volume, setVolume] = useState(0.3);
-  const [repeat, setRepeat] = useState(false);
-  const [shuffle, setShuffle] = useState(false);
   const [showQueue, setShowQueue] = useState(false);
 
   useEffect(() => {
-    if (!activeSong?.id) {
-      navigate("/");
-    }
+    if (!activeSong?.id) navigate("/");
   }, [activeSong, navigate]);
 
-  // Auto-play on track change only. Adding currentSongs.length would restart
-  // playback whenever the queue is refetched.
-  // TODO: remove once playback moves into a single shared audio engine.
-  useEffect(() => {
-    if (currentSongs.length) dispatch(playPause(true));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex]);
-
-  const handlePlayPause = () => {
-    if (!isActive) return;
-    dispatch(playPause(!isPlaying));
-  };
-
-  const handleNext = () => {
-    dispatch(playPause(false));
-    if (!shuffle) {
-      dispatch(nextSong((currentIndex + 1) % currentSongs.length));
-    } else {
-      dispatch(nextSong(Math.floor(Math.random() * currentSongs.length)));
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentIndex === 0) {
-      dispatch(prevSong(currentSongs.length - 1));
-    } else if (shuffle) {
-      dispatch(prevSong(Math.floor(Math.random() * currentSongs.length)));
-    } else {
-      dispatch(prevSong(currentIndex - 1));
-    }
-  };
-
-  const getTime = (time) =>
-    `${Math.floor(time / 60)}:${`0${Math.floor(time % 60)}`.slice(-2)}`;
-
-  const progress = playTime > 0 ? (appTime / playTime) * 100 : 0;
-  const volumeProgress = volume * 100;
-
   if (!activeSong?.id) return null;
+
+  const effectiveVolume = isMuted ? 0 : volume;
+  const progressPercent = duration > 0 ? (progress / duration) * 100 : 0;
+  const volumePercent = effectiveVolume * 100;
 
   return (
     <div className="flex flex-col items-center max-w-lg mx-auto w-full">
@@ -83,6 +51,7 @@ const NowPlaying = () => {
       <div className="w-full flex items-center justify-between mb-4 sm:mb-6">
         <button
           onClick={() => navigate(-1)}
+          aria-label="Close now playing"
           className="w-9 h-9 flex items-center justify-center rounded-[10px] border-2 border-border bg-card hover:bg-card-hover transition-colors flex-shrink-0"
         >
           <BsChevronDown className="text-text-primary text-sm" />
@@ -91,9 +60,13 @@ const NowPlaying = () => {
           NOW PLAYING
         </p>
         <button
-          onClick={() => setShowQueue(!showQueue)}
+          onClick={() => setShowQueue((open) => !open)}
+          aria-label="Toggle queue"
+          aria-pressed={showQueue}
           className={`w-9 h-9 flex items-center justify-center rounded-[10px] border-2 border-border transition-colors flex-shrink-0 ${
-            showQueue ? "bg-primary text-white" : "bg-card hover:bg-card-hover text-text-primary"
+            showQueue
+              ? "bg-primary text-white"
+              : "bg-card hover:bg-card-hover text-text-primary"
           }`}
         >
           <MdQueueMusic className="text-base" />
@@ -103,49 +76,49 @@ const NowPlaying = () => {
       {/* Volume */}
       <div className="w-full flex items-center gap-2 mb-5 sm:mb-7 px-1">
         <button
-          onClick={() => setVolume(volume === 0 ? 0.5 : 0)}
+          onClick={controls.toggleMute}
+          aria-label={isMuted ? "Unmute" : "Mute"}
           className="w-7 h-7 flex items-center justify-center rounded-full text-text-muted hover:text-primary transition-colors flex-shrink-0"
         >
-          {volume > 0.5 && <BsFillVolumeUpFill size={14} />}
-          {volume > 0 && volume <= 0.5 && <BsVolumeDownFill size={14} />}
-          {volume === 0 && <BsFillVolumeMuteFill size={14} />}
+          {effectiveVolume > 0.5 && <BsFillVolumeUpFill size={14} />}
+          {effectiveVolume > 0 && effectiveVolume <= 0.5 && <BsVolumeDownFill size={14} />}
+          {effectiveVolume === 0 && <BsFillVolumeMuteFill size={14} />}
         </button>
         <div className="flex-1 relative h-5 flex items-center group cursor-pointer">
           <div className="w-full h-1 rounded-full bg-background-tertiary overflow-hidden">
             <div
               className="h-full bg-primary rounded-full"
-              style={{ width: `${volumeProgress}%` }}
+              style={{ width: `${volumePercent}%` }}
             />
           </div>
           <input
             type="range"
             step="any"
-            value={volume}
-            min="0"
-            max="1"
-            onChange={(e) => setVolume(parseFloat(e.target.value))}
+            value={effectiveVolume}
+            min={0}
+            max={1}
+            onChange={(event) => controls.setVolume(event.target.value)}
+            aria-label="Volume"
             className="absolute inset-0 w-full opacity-0 cursor-pointer"
           />
           <div
             className="absolute w-3 h-3 bg-primary border-2 border-border rounded-full pointer-events-none -translate-x-1/2 opacity-0 group-hover:opacity-100"
-            style={{ left: `${volumeProgress}%` }}
+            style={{ left: `${volumePercent}%` }}
           />
         </div>
         <span className="text-[9px] text-text-muted font-retro-mono w-7 text-right flex-shrink-0">
-          {Math.round(volume * 100)}%
+          {Math.round(volumePercent)}%
         </span>
       </div>
 
       {/* CD Disc */}
       <div className="relative w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] mb-6 sm:mb-8">
-        {/* Outer ring */}
         <div
           className={`w-full h-full rounded-full border-[3px] border-border shadow-retro-lg overflow-hidden relative ${
             isPlaying ? "animate-[spin_8s_linear_infinite]" : ""
           }`}
           style={{ animationPlayState: isPlaying ? "running" : "paused" }}
         >
-          {/* Album art as disc background */}
           {activeSong.coverUrl ? (
             <img
               src={activeSong.coverUrl}
@@ -158,7 +131,7 @@ const NowPlaying = () => {
             </div>
           )}
 
-          {/* Vinyl grooves overlay */}
+          {/* Vinyl grooves */}
           <div className="absolute inset-0 rounded-full">
             <div className="absolute inset-[15%] rounded-full border border-black/10" />
             <div className="absolute inset-[25%] rounded-full border border-black/8" />
@@ -174,7 +147,7 @@ const NowPlaying = () => {
         </div>
       </div>
 
-      {/* Song Info */}
+      {/* Song info */}
       <div className="w-full text-center mb-5 sm:mb-6 px-4">
         <Link to={`/songs/${activeSong.id}`}>
           <h2 className="text-xl sm:text-2xl font-bold text-text-primary truncate hover:text-primary transition-colors">
@@ -191,35 +164,36 @@ const NowPlaying = () => {
         )}
       </div>
 
-      {/* Seek Bar */}
+      {/* Seek */}
       <div className="w-full px-2 mb-4 sm:mb-6">
         <div className="relative h-6 flex items-center group cursor-pointer">
           <div className="w-full h-1.5 rounded-full bg-background-tertiary overflow-hidden">
             <div
               className="h-full bg-primary rounded-full transition-[width] duration-100"
-              style={{ width: `${progress}%` }}
+              style={{ width: `${progressPercent}%` }}
             />
           </div>
           <input
             type="range"
             step="any"
-            value={appTime}
-            min="0"
-            max={playTime}
-            onInput={(e) => setSeekTime(e.target.value)}
+            value={progress}
+            min={0}
+            max={duration || 0}
+            onChange={(event) => controls.seek(event.target.value)}
+            aria-label="Seek"
             className="absolute inset-0 w-full opacity-0 cursor-pointer"
           />
           <div
             className="absolute w-4 h-4 bg-primary border-2 border-border rounded-full shadow-sm pointer-events-none transition-[left] duration-100 -translate-x-1/2"
-            style={{ left: `${progress}%` }}
+            style={{ left: `${progressPercent}%` }}
           />
         </div>
         <div className="flex justify-between mt-1">
           <span className="text-[10px] text-text-muted font-retro-mono tabular-nums">
-            {appTime === 0 ? "0:00" : getTime(appTime)}
+            {formatTime(progress)}
           </span>
           <span className="text-[10px] text-text-muted font-retro-mono tabular-nums">
-            {playTime === 0 ? "0:00" : getTime(playTime)}
+            {formatTime(duration)}
           </span>
         </div>
       </div>
@@ -227,7 +201,9 @@ const NowPlaying = () => {
       {/* Controls */}
       <div className="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8">
         <button
-          onClick={() => setShuffle((prev) => !prev)}
+          onClick={controls.toggleShuffle}
+          aria-label={shuffle ? "Disable shuffle" : "Shuffle queue"}
+          aria-pressed={shuffle}
           className={`w-9 h-9 flex items-center justify-center rounded-full transition-colors ${
             shuffle ? "text-primary" : "text-text-muted hover:text-text-primary"
           }`}
@@ -235,9 +211,10 @@ const NowPlaying = () => {
           <BsShuffle size={16} />
         </button>
 
-        {currentSongs?.length > 0 && (
+        {currentSongs.length > 0 && (
           <button
-            onClick={handlePrev}
+            onClick={controls.prev}
+            aria-label="Previous track"
             className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full border-2 border-border text-text-primary hover:bg-background-secondary transition-colors"
           >
             <MdSkipPrevious size={22} />
@@ -245,7 +222,8 @@ const NowPlaying = () => {
         )}
 
         <button
-          onClick={handlePlayPause}
+          onClick={controls.toggle}
+          aria-label={isPlaying ? "Pause" : "Play"}
           className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-primary border-2 border-border rounded-full shadow-retro hover:bg-primary-light active:shadow-none active:translate-x-px active:translate-y-px transition-all"
         >
           {isPlaying ? (
@@ -255,9 +233,10 @@ const NowPlaying = () => {
           )}
         </button>
 
-        {currentSongs?.length > 0 && (
+        {currentSongs.length > 0 && (
           <button
-            onClick={handleNext}
+            onClick={controls.next}
+            aria-label="Next track"
             className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full border-2 border-border text-text-primary hover:bg-background-secondary transition-colors"
           >
             <MdSkipNext size={22} />
@@ -265,7 +244,9 @@ const NowPlaying = () => {
         )}
 
         <button
-          onClick={() => setRepeat((prev) => !prev)}
+          onClick={controls.toggleRepeat}
+          aria-label={repeat ? "Disable repeat" : "Repeat this track"}
+          aria-pressed={repeat}
           className={`w-9 h-9 flex items-center justify-center rounded-full transition-colors ${
             repeat ? "text-primary" : "text-text-muted hover:text-text-primary"
           }`}
@@ -273,19 +254,6 @@ const NowPlaying = () => {
           <BsArrowRepeat size={16} />
         </button>
       </div>
-
-      {/* Audio Element */}
-      <PlayBtn
-        activeSong={activeSong}
-        volume={volume}
-        isPlaying={isPlaying}
-        seekTime={seekTime}
-        repeat={repeat}
-        currentIndex={currentIndex}
-        onEnded={handleNext}
-        onTimeUpdate={(e) => setAppTime(e.target.currentTime)}
-        onLoadedData={(e) => setPlayTime(e.target.duration || 0)}
-      />
 
       {/* Queue */}
       {showQueue && currentSongs.length > 0 && (
@@ -299,9 +267,10 @@ const NowPlaying = () => {
           </h3>
           <div className="flex flex-col max-h-[240px] overflow-y-auto hide-scrollbar">
             {currentSongs.map((song, i) => (
-              <div
+              <button
                 key={song.id}
-                className={`flex items-center gap-2.5 py-2 px-2 rounded-lg transition-colors ${
+                onClick={() => controls.playSong(song, currentSongs, i)}
+                className={`flex items-center gap-2.5 py-2 px-2 rounded-lg transition-colors text-left ${
                   i === currentIndex ? "bg-primary/8" : "hover:bg-background-secondary"
                 }`}
               >
@@ -316,6 +285,7 @@ const NowPlaying = () => {
                   <img
                     src={song.coverUrl}
                     alt=""
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -327,7 +297,7 @@ const NowPlaying = () => {
                     {song.artistName}
                   </p>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
