@@ -16,7 +16,9 @@ A personal music player web app built with React and Supabase.
 - **Now Playing** - Full-screen player with spinning disc and queue
 - **Charts & Liked Songs** - Play-count rankings and favorites
 - **Admin Dashboard** - CRUD for songs, artists, and albums with file upload
-- **5 Themes** - Orange, Dark, Mint, Purple, and Rose color schemes
+- **4 Vibes** - Midnight, Ember, Aurora, and Velvet dark palettes
+- **Liquid glass UI** - Blurred panes over an ambient backdrop tinted by the
+  cover art of whatever is playing
 - **Fully Responsive** - Mobile, tablet, and desktop
 
 ## Tech Stack
@@ -102,11 +104,15 @@ src/
 ├── assets/          # Images, constants (genres, nav links)
 ├── components/
 │   ├── player-control/
+│   │   ├── AudioEngine.jsx  # The single <audio> element
 │   │   ├── Track.jsx        # Now-playing track info
-│   │   ├── PlayBtn.jsx      # Audio element & playback logic
 │   │   ├── ControlBtns.jsx  # Play/pause/skip/shuffle/repeat
 │   │   ├── Seekbar.jsx      # Progress bar with timestamps
 │   │   └── Volumebar.jsx    # Volume slider
+│   ├── ui/
+│   │   ├── GlassPanel.jsx   # Glass surface primitive
+│   │   └── GlassButton.jsx  # Glass button primitive
+│   ├── AmbientBackdrop.jsx  # Drifting colour fields behind the glass
 │   ├── Sidebar.jsx          # Fixed sidebar with navigation
 │   ├── Searchbar.jsx        # Fixed search bar with theme switcher
 │   ├── TopPlay.jsx          # Charts sidebar & artist carousel
@@ -124,14 +130,19 @@ src/
 │   ├── Loader.jsx           # Loading spinner
 │   └── Error.jsx            # Error state
 ├── contexts/
-│   ├── ThemeContext.jsx     # Theme management with CSS variables
+│   ├── ThemeContext.jsx     # Applies the active vibe to :root
 │   ├── SidebarContext.jsx   # Mobile sidebar open state
 │   └── AuthContext.jsx      # Supabase session + admin status
+├── theme/
+│   └── vibes.js             # Vibe palettes (colour + glass + ambient tokens)
 ├── hooks/
 │   ├── useAuth.js           # Consumes AuthContext
-│   └── useTheme.js          # Consumes ThemeContext
+│   ├── useTheme.js          # Consumes ThemeContext
+│   ├── usePlayerControls.js # Every playback action
+│   └── useDominantColors.js # Cover-art colour extraction
 ├── lib/
-│   └── supabase.js          # Supabase client
+│   ├── supabase.js          # Supabase client
+│   └── formatTime.js        # Seconds -> m:ss
 ├── pages/
 │   ├── Discover.jsx         # Genre-filtered songs with pagination
 │   ├── Artists.jsx          # Artists grid
@@ -222,27 +233,77 @@ Selecting the whole slice re-renders that component four times a second. Only
 
 ## Design System
 
-Custom component classes defined in `index.css`:
+### Glass
 
-- **`.retro-card`** / **`.retro-card-interactive`** - Cards, the latter with hover lift
-- **`.retro-btn`** / **`.retro-btn-outline`** - Buttons with offset shadow
-- **`.retro-input`** - Input with thick border and focus glow
-- **`.retro-badge`** - Small pill label
-- **`.retro-range`** - Custom styled range slider
-- **`.retro-divider`** - Horizontal rule
+Four ingredients, and all four matter:
 
-### Themes
+1. **A translucent tint** — lets the backdrop through
+2. **`blur()` + `saturate()`** — saturate compensates for the wash-out blurring
+   alone causes
+3. **A hairline border** — defines the pane's edge
+4. **An inset top highlight** — the specular line where light catches the rim.
+   Skip it and the pane reads as a flat frosted rectangle, not glass.
 
-Themes swap CSS custom properties on `:root` and persist to `localStorage`.
-Switchable via the palette icon in the search bar.
+| Class | Use |
+|---|---|
+| `.glass-1` | Subtle chrome — top bar, nav, buttons (blur 12px) |
+| `.glass-2` | Cards, the default (blur 20px) |
+| `.glass-3` | Modals and the player, closest to the viewer (blur 40px) |
+| `.glass-flat` | Rows inside a scrolling list — translucent, **no blur** |
+| `.glass-interactive` | Hover lift plus a light sweep across the pane |
 
-| Theme | Primary Color | Background |
+Components: `<GlassPanel elevation radius interactive>` and
+`<GlassButton variant size>` in `src/components/ui/`.
+
+**Rules**
+
+- **Never nest more than two blurred layers.** Each re-blurs what the one below
+  already blurred and the result turns to mud. Use `.glass-flat` inside a pane.
+- **Never put `backdrop-filter` on a scrolling list row.** It forces a
+  compositing layer per row and destroys scroll performance.
+- **Never write `.glass-x { @apply glass; ... }`.** Tailwind's `@apply` copies
+  every rule matching the applied class — including the ones inside the media
+  queries at the bottom of `index.css` — and re-emits them *ahead* of the
+  override, silently breaking the reduced-transparency fallback. Elevation is
+  driven by the `--pane-blur` / `--pane-saturate` custom properties instead.
+
+### Vibes
+
+Themes are dark by design. Glass only reads as glass when there is depth
+behind it: a light surface under a blur just turns grey, and the specular edge
+disappears. Each vibe is a near-black base plus a saturated accent pair that
+the ambient backdrop paints with. Defined in `src/theme/vibes.js`, applied as
+CSS custom properties on `:root`, persisted to `localStorage`.
+
+| Vibe | Accent | Base |
 |---|---|---|
-| Retro Orange | `#E8871E` | `#F5EDE3` |
-| Retro Dark | `#E8871E` | `#1E1E1E` |
-| Retro Mint | `#2EAD8E` | `#F0F5F3` |
-| Retro Purple | `#8B5CF6` | `#F5F0FA` |
-| Retro Rose | `#E05080` | `#FDF0F4` |
+| Midnight (default) | `#7C9CFF` → `#B388FF` | `#07090F` |
+| Ember | `#FF9F45` → `#FF6B5E` | `#0D0806` |
+| Aurora | `#4EE7B0` → `#38BDF8` | `#04100D` |
+| Velvet | `#C084FC` → `#F472B6` | `#0A0610` |
+
+Accents are light, so text on an accent fill uses `text-on-accent` (a dark tone
+defined per vibe), never `text-white`.
+
+### Ambient backdrop
+
+`AmbientBackdrop` is what gives the glass something to refract. Two large
+blurred colour fields drift slowly behind everything, tinted by the current
+cover art via `useDominantColors` — a 16×16 canvas sample that buckets pixels
+and discards near-black, near-white, and desaturated ones. Falls back to the
+vibe's accent pair when no song is playing, when the image is not
+CORS-readable, or when the canvas is tainted.
+
+A radial darkening wash sits on top: without it, bright cover art lifts the
+backdrop enough to break text contrast on the panes above.
+
+### Accessibility
+
+- `prefers-reduced-transparency: reduce` → every pane becomes opaque
+  (`--glass-solid`) and the ambient blobs are hidden
+- `prefers-reduced-motion: reduce` → drift animations and hover transforms off
+- `@supports not (backdrop-filter)` → opaque fallback
+- `:focus-visible` gets a 2px accent outline
 
 ### Responsive Breakpoints
 

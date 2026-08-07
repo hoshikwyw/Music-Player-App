@@ -5,11 +5,17 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    color-scheme: dark;
+  }
+
   body {
-    @apply bg-background text-text-primary font-retro;
+    @apply text-text-primary font-sans;
+    /* The ambient backdrop paints the real background; this is the fallback
+       colour behind it and the flash-guard before React mounts. */
+    background-color: var(--color-background);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   /* Scoped to interactive elements. A universal `*` rule forces a transition on
@@ -21,89 +27,265 @@
   textarea {
     transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
   }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 }
 
+/* ============================================================
+   Glass
+   ============================================================
+   Four ingredients, and all four matter:
+     1. a translucent tint      -- lets the backdrop through
+     2. blur + saturate         -- saturate compensates for the wash-out that
+                                   blurring alone causes
+     3. a hairline border       -- defines the pane's edge
+     4. an inset top highlight  -- the specular line where light catches the
+                                   rim. Skip this and it reads as a flat
+                                   frosted rectangle rather than glass.
+
+   Structure note: every glass class shares one base rule and differs only in
+   the --pane-blur / --pane-saturate custom properties. Do NOT rewrite this as
+   `.glass-1 { @apply glass; ... }`. Tailwind's @apply copies every rule that
+   matches the applied class -- including the ones inside the media queries at
+   the bottom of this file -- and re-emits them ahead of the override, which
+   silently breaks the reduced-transparency fallback.
+
+   Never nest more than two blurred layers: each one re-blurs what the one
+   below already blurred, and the result turns to mud. Use .glass-flat inside
+   a pane.
+   ------------------------------------------------------------ */
+
 @layer components {
-  /* Retro Card */
-  .retro-card {
-    @apply bg-card border-2 border-border rounded-retro;
-    transition: transform 0.2s ease, box-shadow 0.2s ease,
-      background-color 0.2s ease, border-color 0.2s ease;
-  }
-  .retro-card-interactive {
-    @apply retro-card shadow-retro-sm;
-  }
-  .retro-card-interactive:hover {
-    transform: translate(-1px, -1px);
-    @apply shadow-retro;
-  }
-  .retro-card-interactive:active {
-    transform: translate(1px, 1px);
-    box-shadow: none;
+  .glass,
+  .glass-1,
+  .glass-2,
+  .glass-3,
+  .glass-btn,
+  .glass-input,
+  .retro-card,
+  .retro-card-interactive,
+  .retro-btn,
+  .retro-btn-outline,
+  .retro-input {
+    --pane-blur: 20px;
+    --pane-saturate: 180%;
+
+    position: relative;
+    background: var(--glass-tint);
+    backdrop-filter: blur(var(--pane-blur)) saturate(var(--pane-saturate));
+    -webkit-backdrop-filter: blur(var(--pane-blur)) saturate(var(--pane-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-highlight),
+      inset 0 -1px 0 0 var(--glass-lowlight),
+      0 8px 32px -12px var(--glass-shadow);
   }
 
-  /* Retro Button */
-  .retro-btn {
-    @apply bg-primary text-white font-semibold px-4 py-2 border-2 border-border rounded-retro-sm shadow-retro-sm cursor-pointer text-sm;
-    transition: transform 0.15s ease, box-shadow 0.15s ease,
-      background-color 0.15s ease, border-color 0.15s ease;
+  /* Elevation 1 -- subtle chrome: top bars, nav, buttons */
+  .glass-1,
+  .glass-btn,
+  .glass-input,
+  .retro-btn,
+  .retro-btn-outline,
+  .retro-input {
+    --pane-blur: 12px;
+    --pane-saturate: 160%;
   }
-  .retro-btn:hover {
-    transform: translate(-1px, -1px);
-    @apply shadow-retro bg-primary-light;
+
+  /* Elevation 3 -- modals and the player, closest to the viewer */
+  .glass-3 {
+    --pane-blur: 40px;
+    --pane-saturate: 200%;
+    background: var(--glass-tint-strong);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-highlight),
+      inset 0 -1px 0 0 var(--glass-lowlight),
+      0 16px 48px -12px var(--glass-shadow);
   }
-  .retro-btn:active {
-    transform: translate(1px, 1px);
-    box-shadow: none;
+
+  /* For rows inside a scrolling list. A backdrop-filter per row forces a
+     compositing layer per row and wrecks scroll performance, so this is
+     translucency only -- no blur. */
+  .glass-flat {
+    background: var(--glass-tint);
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
   }
-  .retro-btn:disabled {
+
+  .glass-flat:hover {
+    background: var(--glass-tint-strong);
+    border-color: var(--glass-border);
+  }
+
+  /* Hover lift plus a light sweep across the pane. */
+  .glass-interactive,
+  .retro-card-interactive {
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.25s ease, background-color 0.25s ease;
+  }
+
+  .glass-interactive::after,
+  .retro-card-interactive::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      var(--glass-highlight) 50%,
+      transparent 70%
+    );
+    opacity: 0;
+    transform: translateX(-60%);
+    transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  .glass-interactive:hover,
+  .retro-card-interactive:hover {
+    transform: translateY(-2px);
+    background: var(--glass-tint-strong);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-highlight),
+      inset 0 -1px 0 0 var(--glass-lowlight),
+      0 16px 40px -12px var(--glass-shadow);
+  }
+
+  .glass-interactive:hover::after,
+  .retro-card-interactive:hover::after {
+    opacity: 0.35;
+    transform: translateX(60%);
+  }
+
+  .glass-interactive:active,
+  .retro-card-interactive:active {
+    transform: translateY(0);
+  }
+
+  /* ---------- Controls ---------- */
+
+  .glass-btn,
+  .retro-btn,
+  .retro-btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-semibold cursor-pointer;
+    color: var(--color-text-primary);
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .glass-btn:hover,
+  .retro-btn-outline:hover {
+    background: var(--glass-tint-strong);
+    transform: translateY(-1px);
+  }
+
+  .glass-btn:active,
+  .retro-btn:active,
+  .retro-btn-outline:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .glass-btn:disabled,
+  .retro-btn:disabled,
+  .retro-btn-outline:disabled {
     @apply opacity-40 cursor-not-allowed;
     transform: none;
-    box-shadow: none;
   }
 
-  /* Retro Button Outline */
-  .retro-btn-outline {
-    @apply bg-card text-text-primary font-semibold px-4 py-2 border-2 border-border rounded-retro-sm shadow-retro-sm cursor-pointer text-sm;
-    transition: transform 0.15s ease, box-shadow 0.15s ease,
-      background-color 0.15s ease, border-color 0.15s ease;
-  }
-  .retro-btn-outline:hover {
-    transform: translate(-1px, -1px);
-    @apply shadow-retro bg-card-hover;
-  }
-  .retro-btn-outline:active {
-    transform: translate(1px, 1px);
-    box-shadow: none;
+  /* Solid accent fill -- deliberately not glass, so primary actions read as
+     the one opaque thing on screen. */
+  .glass-btn-accent,
+  .retro-btn {
+    background: var(--color-primary);
+    color: var(--color-on-accent);
+    border-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 6px 20px -6px color-mix(in srgb, var(--color-primary) 70%, transparent);
   }
 
-  /* Retro Input */
+  .glass-btn-accent:hover,
+  .retro-btn:hover {
+    background: var(--color-primary-light);
+    transform: translateY(-1px);
+  }
+
+  .glass-input,
   .retro-input {
-    @apply bg-surface border-2 border-border rounded-retro-sm px-4 py-2 text-text-primary placeholder-text-muted font-retro outline-none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    @apply rounded-full px-4 py-2 text-sm;
+    color: var(--color-text-primary);
+    outline: none;
   }
+
+  .glass-input::placeholder,
+  .retro-input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .glass-input:focus-within,
   .retro-input:focus-within {
-    @apply border-border-accent;
-    box-shadow: 0 0 0 2px rgba(232, 135, 30, 0.12);
+    border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-highlight),
+      0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
   }
 
-  /* Retro Badge */
+  .glass-badge,
   .retro-badge {
-    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-semibold border border-border rounded-full text-text-secondary;
+    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-semibold rounded-full;
+    background: var(--glass-tint-strong);
+    border: 1px solid var(--glass-border);
+    color: var(--color-text-secondary);
   }
 
-  /* Retro Divider */
+  .glass-divider,
   .retro-divider {
-    @apply w-full border-t-2;
-    border-color: color-mix(in srgb, var(--color-border) 30%, transparent);
+    height: 1px;
+    border: 0;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--glass-border),
+      transparent
+    );
   }
 
-  /* Retro Section Title */
+  .retro-divider {
+    @apply w-full;
+  }
+
   .retro-title {
     @apply text-2xl font-bold text-text-primary tracking-tight;
   }
 
-  /* Retro Scrollbar */
+  .glass-range,
+  .retro-range {
+    @apply appearance-none h-1 rounded-full outline-none cursor-pointer;
+    background: var(--glass-tint-strong);
+  }
+
+  .glass-range::-webkit-slider-thumb,
+  .retro-range::-webkit-slider-thumb {
+    @apply appearance-none w-3.5 h-3.5 rounded-full cursor-pointer border-0;
+    background: var(--color-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+
+  .glass-range::-moz-range-thumb,
+  .retro-range::-moz-range-thumb {
+    @apply w-3.5 h-3.5 rounded-full cursor-pointer border-0;
+    background: var(--color-primary);
+  }
+
   .retro-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
@@ -111,30 +293,41 @@
     @apply bg-transparent;
   }
   .retro-scrollbar::-webkit-scrollbar-thumb {
-    background-color: color-mix(in srgb, var(--color-border) 30%, transparent);
+    background-color: var(--glass-border);
     @apply rounded-full;
   }
   .retro-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: color-mix(in srgb, var(--color-border) 50%, transparent);
-  }
-
-  /* Retro Range/Slider */
-  .retro-range {
-    @apply appearance-none h-1.5 rounded-full bg-background-tertiary outline-none cursor-pointer;
-  }
-  .retro-range::-webkit-slider-thumb {
-    @apply appearance-none w-4 h-4 rounded-full bg-primary border-2 border-border cursor-pointer;
-    margin-top: -1px;
-  }
-  .retro-range::-moz-range-thumb {
-    @apply w-4 h-4 rounded-full bg-primary border-2 border-border cursor-pointer;
-  }
-  .retro-range::-webkit-slider-runnable-track {
-    @apply h-1.5 rounded-full;
+    background-color: var(--glass-highlight);
   }
 }
 
-/* Hide scrollbar utility */
+/* ============================================================
+   Ambient backdrop
+   ------------------------------------------------------------ */
+
+.ambient-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  will-change: transform;
+}
+
+@keyframes ambient-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33%      { transform: translate3d(6vw, -4vh, 0) scale(1.12); }
+  66%      { transform: translate3d(-4vw, 5vh, 0) scale(0.94); }
+}
+
+@keyframes ambient-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33%      { transform: translate3d(-7vw, 5vh, 0) scale(0.92); }
+  66%      { transform: translate3d(5vw, -6vh, 0) scale(1.15); }
+}
+
+/* ============================================================
+   Utilities
+   ------------------------------------------------------------ */
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -143,7 +336,77 @@
   scrollbar-width: none;
 }
 
-/* Smooth transition utility */
 .smooth-transition {
   transition: all 0.3s ease-in-out;
+}
+
+/* ============================================================
+   Accessibility and capability fallbacks
+   ------------------------------------------------------------
+   Glass is the most common accessibility failure in this style: text over a
+   live blur has no guaranteed contrast. When the user asks for reduced
+   transparency, every pane becomes opaque.
+   ------------------------------------------------------------ */
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-1,
+  .glass-2,
+  .glass-3,
+  .glass-flat,
+  .glass-input,
+  .retro-card,
+  .retro-card-interactive,
+  .retro-input {
+    background: var(--glass-solid);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .glass-btn:not(.glass-btn-accent),
+  .retro-btn-outline {
+    background: var(--glass-solid);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .ambient-blob {
+    display: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-1,
+  .glass-2,
+  .glass-3,
+  .glass-input,
+  .retro-card,
+  .retro-card-interactive,
+  .retro-input,
+  .glass-btn:not(.glass-btn-accent),
+  .retro-btn-outline {
+    background: var(--glass-solid);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-blob {
+    animation: none !important;
+  }
+
+  .glass-interactive,
+  .glass-interactive::after,
+  .retro-card-interactive,
+  .retro-card-interactive::after,
+  .glass-btn,
+  .retro-btn,
+  .retro-btn-outline {
+    transition-duration: 0.01ms !important;
+  }
+
+  .glass-interactive:hover,
+  .retro-card-interactive:hover {
+    transform: none;
+  }
 }

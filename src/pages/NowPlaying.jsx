@@ -65,7 +65,7 @@ const NowPlaying = () => {
           aria-pressed={showQueue}
           className={`w-9 h-9 flex items-center justify-center rounded-[10px] border-2 border-border transition-colors flex-shrink-0 ${
             showQueue
-              ? "bg-primary text-white"
+              ? "bg-primary text-on-accent"
               : "bg-card hover:bg-card-hover text-text-primary"
           }`}
         >
@@ -227,9 +227,9 @@ const NowPlaying = () => {
           className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-primary border-2 border-border rounded-full shadow-retro hover:bg-primary-light active:shadow-none active:translate-x-px active:translate-y-px transition-all"
         >
           {isPlaying ? (
-            <BsFillPauseFill className="text-white text-xl sm:text-2xl" />
+            <BsFillPauseFill className="text-on-accent text-xl sm:text-2xl" />
           ) : (
-            <BsFillPlayFill className="text-white text-xl sm:text-2xl ml-0.5" />
+            <BsFillPlayFill className="text-on-accent text-xl sm:text-2xl ml-0.5" />
           )}
         </button>
 

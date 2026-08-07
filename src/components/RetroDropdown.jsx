@@ -55,7 +55,7 @@ const RetroDropdown = ({ options, value, onChange, placeholder = "Select..." }) 
                   }}
                   className={`w-full text-left px-3 py-[7px] text-[13px] flex items-center justify-between transition-colors duration-100 ${
                     isActive
-                      ? "bg-primary text-white font-semibold"
+                      ? "bg-primary text-on-accent font-semibold"
                       : "text-text-primary hover:bg-background-secondary"
                   }`}
                 >

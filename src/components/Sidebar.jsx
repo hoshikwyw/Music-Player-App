@@ -13,7 +13,7 @@ const NavLinks = ({ handleClick }) => (
         className={({ isActive }) =>
           `flex items-center gap-3 px-3.5 py-2.5 text-sm font-semibold rounded-[10px] transition-all duration-150 ${
             isActive
-              ? "bg-primary text-white"
+              ? "bg-primary text-on-accent"
               : "text-text-secondary hover:bg-background-secondary hover:text-text-primary"
           }`
         }

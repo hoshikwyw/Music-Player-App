@@ -59,7 +59,7 @@ const Charts = () => {
 
               {/* Badge */}
               <div className="flex items-center gap-1 mb-2">
-                <span className={`retro-badge text-[9px] sm:text-[10px] ${i === 0 ? 'bg-primary text-white border-primary' : 'bg-card'}`}>
+                <span className={`retro-badge text-[9px] sm:text-[10px] ${i === 0 ? 'bg-primary text-on-accent border-primary' : 'bg-card'}`}>
                   {rankLabels[i]}
                 </span>
               </div>
@@ -79,9 +79,9 @@ const Charts = () => {
                     className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-primary border-2 border-border rounded-full shadow-retro-sm"
                   >
                     {playing ? (
-                      <BsFillPauseFill className="text-white text-base sm:text-lg" />
+                      <BsFillPauseFill className="text-on-accent text-base sm:text-lg" />
                     ) : (
-                      <BsFillPlayFill className="text-white text-base sm:text-lg ml-0.5" />
+                      <BsFillPlayFill className="text-on-accent text-base sm:text-lg ml-0.5" />
                     )}
                   </button>
                 </div>
@@ -137,9 +137,9 @@ const Charts = () => {
                       className="w-7 h-7 flex items-center justify-center bg-primary rounded-full"
                     >
                       {playing ? (
-                        <BsFillPauseFill className="text-white text-xs" />
+                        <BsFillPauseFill className="text-on-accent text-xs" />
                       ) : (
-                        <BsFillPlayFill className="text-white text-xs ml-px" />
+                        <BsFillPlayFill className="text-on-accent text-xs ml-px" />
                       )}
                     </button>
                   </div>

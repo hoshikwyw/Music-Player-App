@@ -17,6 +17,7 @@ import NotFound from './pages/NotFound'
 import ErrorBoundary from './components/ErrorBoundary'
 import RequireAdmin from './components/RequireAdmin'
 import AudioEngine from './components/player-control/AudioEngine'
+import AmbientBackdrop from './components/AmbientBackdrop'
 
 const App = () => {
   const activeSong = useActiveSong()
@@ -25,7 +26,9 @@ const App = () => {
   const isNowPlaying = location.pathname === '/now-playing'
 
   return (
-    <div className="relative flex min-h-screen bg-background">
+    <div className="relative flex min-h-screen">
+      {/* Painted behind everything -- glass needs a backdrop to refract */}
+      <AmbientBackdrop />
       {/* Mounted once, outside the routes, so playback survives navigation */}
       <AudioEngine />
       <Sidebar />

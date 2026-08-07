@@ -50,14 +50,14 @@ const Tab = ({ active, icon: Icon, label, count, onClick }) => (
   <button
     onClick={onClick}
     className={`flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-[10px] transition-all ${
-      active ? "bg-primary text-white" : "text-text-secondary hover:bg-background-secondary"
+      active ? "bg-primary text-on-accent" : "text-text-secondary hover:bg-background-secondary"
     }`}
   >
     <Icon className="text-sm" />
     {label}
     {count != null && (
       <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-retro-mono ${
-        active ? "bg-white/20 text-white" : "bg-background-secondary text-text-muted"
+        active ? "bg-on-accent/20 text-on-accent" : "bg-background-secondary text-text-muted"
       }`}>
         {count}
       </span>

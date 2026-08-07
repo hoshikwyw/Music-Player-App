@@ -76,7 +76,7 @@ const Discover = () => {
             >
               Prev
             </button>
-            <span className="retro-badge bg-primary text-white border-primary text-[10px] sm:text-xs">
+            <span className="retro-badge bg-primary text-on-accent border-primary text-[10px] sm:text-xs">
               {page} / {Math.ceil(total / pageSize)}
             </span>
             <button

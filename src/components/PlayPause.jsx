@@ -11,9 +11,9 @@ const PlayPause = ({ isPlaying, activeSong, song, handlePause, handlePlay }) => 
       className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center bg-primary border-2 border-border rounded-full shadow-retro-sm hover:bg-primary-light transition-colors"
     >
       {isCurrent ? (
-        <BsFillPauseFill className="text-white text-sm sm:text-lg" />
+        <BsFillPauseFill className="text-on-accent text-sm sm:text-lg" />
       ) : (
-        <BsFillPlayFill className="text-white text-sm sm:text-lg ml-0.5" />
+        <BsFillPlayFill className="text-on-accent text-sm sm:text-lg ml-0.5" />
       )}
     </button>
   );
