@@ -52,15 +52,19 @@ Fill in `.env` with your Supabase project credentials:
 ```
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key-here
-VITE_ADMIN_SECRET=your-secret-admin-key
 ```
+
+Vite inlines every `VITE_`-prefixed variable into the client bundle, so never
+put a real secret here. The anon key is safe to expose — RLS is what protects
+the data.
 
 ### Database setup
 
 Run `supabase-schema.sql` in the Supabase SQL editor. It creates the tables
 (`categories`, `artists`, `albums`, `songs`, `play_history`, `liked_songs`,
-`artist_categories`), the ranking views (`top_charts`, `top_artists`,
-`top_albums`), the `increment_play_count` function, and the RLS policies.
+`artist_categories`, `admins`), the ranking views (`top_charts`, `top_artists`,
+`top_albums`), the `increment_play_count` and `is_admin` functions, and the RLS
+policies.
 
 You also need two public storage buckets: one for audio files and one for
 cover art.
@@ -178,14 +182,38 @@ Switchable via the palette icon in the search bar.
 | Tablet (768-1023px) | Fixed sidebar | Hidden | 3 columns |
 | Desktop (1024px+) | Fixed sidebar | Right sidebar | 3-4 columns |
 
-## Security Notes
+## Admin Access
 
-The admin dashboard at `/superadmin` is currently gated by a client-side key
-check only. `VITE_ADMIN_SECRET` is inlined into the production bundle by Vite,
-and the RLS policies in `supabase-schema.sql` permit public insert, update, and
-delete on `songs`, `artists`, and `albums`. Do not deploy publicly until the
-admin routes are behind Supabase Auth and those policies are restricted to an
-authenticated role.
+The dashboard at `/superadmin` requires a Supabase Auth account that is listed
+in the `admins` table.
+
+To grant yourself access:
+
+1. Supabase Dashboard > **Authentication > Users > Add user** — set an email
+   and password
+2. Copy the new user's UUID
+3. Run in the SQL editor:
+   ```sql
+   insert into admins (user_id) values ('<paste-uuid-here>');
+   ```
+
+The `RequireAdmin` route guard is only a convenience. The real boundary is the
+RLS policies: every insert, update, and delete on `songs`, `artists`, `albums`,
+`categories`, and `artist_categories` calls `is_admin()`, as do all writes to
+the `audio` and `covers` storage buckets. Bypassing the guard in the browser
+grants nothing.
+
+### Existing projects
+
+If your database was created before these policies existed, run
+`supabase/migrations/001_secure_admin_writes.sql` in the SQL editor. It drops
+the old `using (true)` write policies and replaces them with the admin checks.
+
+### Known gap
+
+`liked_songs` stays publicly readable and writable so listeners never have to
+sign in, which means anyone with the anon key can add to or clear the liked
+list. Acceptable for a single-user personal app; revisit before sharing.
 
 ## Scripts
 

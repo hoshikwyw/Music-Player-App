@@ -15,6 +15,7 @@ import NowPlaying from './pages/NowPlaying'
 import AdminDashboard from './pages/AdminDashboard'
 import NotFound from './pages/NotFound'
 import ErrorBoundary from './components/ErrorBoundary'
+import RequireAdmin from './components/RequireAdmin'
 
 const App = () => {
   const { activeSong } = useSelector((state) => state.player)
@@ -45,7 +46,14 @@ const App = () => {
                 <Route path='/liked' element={<Liked />} />
                 <Route path='/search/:searchTerm' element={<Search />} />
                 <Route path='/now-playing' element={<NowPlaying />} />
-                <Route path='/superadmin' element={<AdminDashboard />} />
+                <Route
+                  path='/superadmin'
+                  element={
+                    <RequireAdmin>
+                      <AdminDashboard />
+                    </RequireAdmin>
+                  }
+                />
                 <Route path='*' element={<NotFound />} />
               </Routes>
             </ErrorBoundary>

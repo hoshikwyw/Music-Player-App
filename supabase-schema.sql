@@ -137,7 +137,7 @@ begin
   update songs set play_count = play_count + 1 where id = p_song_id;
   insert into play_history (song_id) values (p_song_id);
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = public;
 
 -- ============================================
 -- Row Level Security
@@ -150,33 +150,78 @@ alter table play_history enable row level security;
 alter table liked_songs enable row level security;
 alter table artist_categories enable row level security;
 
--- Public read on all tables
+-- Admin allow-list. Only writable from the SQL editor or the service role;
+-- a signed-in user can read nothing but their own row.
+create table if not exists admins (
+  user_id    uuid primary key references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
+alter table admins enable row level security;
+
+create policy "Read own admin row" on admins
+  for select using (auth.uid() = user_id);
+
+-- security definer so write policies can call this without recursing into the
+-- admins table's own RLS. Pinned search_path prevents shadowing attacks.
+create or replace function is_admin()
+returns boolean as $$
+  select exists (select 1 from admins where user_id = auth.uid());
+$$ language sql stable security definer set search_path = public;
+
+grant execute on function is_admin() to anon, authenticated;
+
+-- Public read on catalog tables
 create policy "Public read" on categories for select using (true);
 create policy "Public read" on artists for select using (true);
 create policy "Public read" on albums for select using (true);
 create policy "Public read" on songs for select using (true);
-create policy "Public read" on play_history for select using (true);
 create policy "Public read" on liked_songs for select using (true);
 create policy "Public read" on artist_categories for select using (true);
 
--- Public write for play_history and liked_songs
-create policy "Public insert" on play_history for insert with check (true);
+-- play_history is a listening log, not public data. It is written only by
+-- increment_play_count(), which is security definer and bypasses RLS.
+create policy "Admin read" on play_history
+  for select to authenticated using (is_admin());
+
+-- Likes stay open so listeners never have to sign in. Anyone with the anon key
+-- can therefore add to or clear the liked list -- fine for a single-user app.
 create policy "Public insert" on liked_songs for insert with check (true);
 create policy "Public delete" on liked_songs for delete using (true);
 
--- Allow the increment function to update songs
-create policy "Public update play_count" on songs for update using (true) with check (true);
+-- Content writes require an authenticated user on the admin allow-list.
+do $$
+declare
+  t text;
+begin
+  foreach t in array array['songs', 'artists', 'albums', 'categories', 'artist_categories']
+  loop
+    execute format(
+      'create policy "Admin insert" on %I for insert to authenticated with check (is_admin())', t);
+    execute format(
+      'create policy "Admin update" on %I for update to authenticated using (is_admin()) with check (is_admin())', t);
+    execute format(
+      'create policy "Admin delete" on %I for delete to authenticated using (is_admin())', t);
+  end loop;
+end $$;
 
--- Admin write access (songs, artists, albums)
--- Note: In production, restrict these with auth checks instead of public access
-create policy "Public insert" on songs for insert with check (true);
-create policy "Public delete" on songs for delete using (true);
-create policy "Public insert" on artists for insert with check (true);
-create policy "Public update" on artists for update using (true) with check (true);
-create policy "Public delete" on artists for delete using (true);
-create policy "Public insert" on albums for insert with check (true);
-create policy "Public update" on albums for update using (true) with check (true);
-create policy "Public delete" on albums for delete using (true);
+-- Storage: public read, admin-only write. Without these, anyone with the anon
+-- key can overwrite your audio and cover art (uploads use upsert: true).
+create policy "Public read media" on storage.objects
+  for select using (bucket_id in ('audio', 'covers'));
+
+create policy "Admin write media" on storage.objects
+  for insert to authenticated
+  with check (bucket_id in ('audio', 'covers') and is_admin());
+
+create policy "Admin update media" on storage.objects
+  for update to authenticated
+  using (bucket_id in ('audio', 'covers') and is_admin())
+  with check (bucket_id in ('audio', 'covers') and is_admin());
+
+create policy "Admin delete media" on storage.objects
+  for delete to authenticated
+  using (bucket_id in ('audio', 'covers') and is_admin());
 
 -- ============================================
 -- Storage Buckets (create in Supabase Dashboard > Storage)

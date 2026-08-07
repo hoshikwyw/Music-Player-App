@@ -9,61 +9,7 @@ import {
   BsMusicNoteBeamed, BsPeopleFill, BsDisc, BsPlus, BsPencil,
   BsTrash, BsUpload, BsX, BsCheck, BsShieldLock,
 } from "react-icons/bs";
-
-const ADMIN_KEY = import.meta.env.VITE_ADMIN_SECRET || "admin123";
-
-// ============================================
-// Auth Gate
-// ============================================
-const useAdminAuth = () => {
-  const [authed, setAuthed] = useState(() => sessionStorage.getItem("admin_authed") === "1");
-  const login = (key) => {
-    if (key === ADMIN_KEY) {
-      sessionStorage.setItem("admin_authed", "1");
-      setAuthed(true);
-      return true;
-    }
-    return false;
-  };
-  const logout = () => {
-    sessionStorage.removeItem("admin_authed");
-    setAuthed(false);
-  };
-  return { authed, login, logout };
-};
-
-const AdminLogin = ({ onLogin }) => {
-  const [key, setKey] = useState("");
-  const [error, setError] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!onLogin(key)) setError(true);
-  };
-
-  return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="retro-card p-6 sm:p-8 w-full max-w-sm">
-        <div className="flex items-center gap-2 mb-5">
-          <BsShieldLock className="text-primary text-xl" />
-          <h2 className="text-lg font-bold text-text-primary">Admin Access</h2>
-        </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <input
-            type="password"
-            placeholder="Enter admin key..."
-            value={key}
-            onChange={(e) => { setKey(e.target.value); setError(false); }}
-            className="retro-input text-sm"
-            autoFocus
-          />
-          {error && <p className="text-xs text-danger font-semibold">Invalid key. Try again.</p>}
-          <button type="submit" className="retro-btn text-sm">Unlock</button>
-        </form>
-      </div>
-    </div>
-  );
-};
+import { useAuth } from "../hooks/useAuth";
 
 // ============================================
 // File Upload Button
@@ -542,10 +488,8 @@ const AlbumsTab = () => {
 // Main Dashboard
 // ============================================
 const AdminDashboard = () => {
-  const { authed, login, logout } = useAdminAuth();
+  const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState("songs");
-
-  if (!authed) return <AdminLogin onLogin={login} />;
 
   return (
     <div className="flex flex-col">
@@ -555,11 +499,11 @@ const AdminDashboard = () => {
             <BsShieldLock className="text-primary" />
             Admin Dashboard
           </h2>
-          <p className="text-[10px] sm:text-[11px] text-text-muted mt-0.5 font-retro-mono">
-            MANAGE YOUR MUSIC LIBRARY
+          <p className="text-[10px] sm:text-[11px] text-text-muted mt-0.5 font-retro-mono truncate">
+            {user?.email?.toUpperCase() || "MANAGE YOUR MUSIC LIBRARY"}
           </p>
         </div>
-        <button onClick={logout} className="retro-btn-outline !text-xs !px-3 !py-1.5">Logout</button>
+        <button onClick={signOut} className="retro-btn-outline !text-xs !px-3 !py-1.5">Sign out</button>
       </div>
 
       <div className="flex items-center gap-1 mb-4 overflow-x-auto hide-scrollbar">
