@@ -9,12 +9,13 @@ A personal music player web app built with React and Supabase.
 
 ## Features
 
-- **Music Discovery** - Browse songs by genre with pagination
-- **Search** - Search songs and artists
-- **Artist & Song Details** - Artist info, lyrics, and related tracks
-- **Music Player** - Play/pause, next/prev, shuffle, repeat, seek, volume
-- **Now Playing** - Full-screen player with spinning disc and queue
-- **Charts & Liked Songs** - Play-count rankings and favorites
+- **Moods, not genres** - Chill, Focus, Night Drive, Rainy, Lift, Sleep. The
+  home screen suggests one based on the time of day
+- **Now Playing** - Immersive player with a spinning record and queue
+- **Sleep timer** - Stops playback after 15/30/45/60 minutes
+- **Pick up where you left off** - Recently played, kept locally
+- **Liked** - Keep tracks, play or shuffle the lot
+- **Search** - Songs and artists
 - **Admin Dashboard** - CRUD for songs, artists, and albums with file upload
 - **4 Vibes** - Midnight, Ember, Aurora, and Velvet dark palettes
 - **Liquid glass UI** - Blurred panes over an ambient backdrop tinted by the
@@ -28,11 +29,10 @@ A personal music player web app built with React and Supabase.
 | React 18 | UI framework |
 | Supabase | Postgres database, storage, and auth |
 | TanStack Query v5 | Server state, caching, and mutations |
-| Redux Toolkit | Playback state (queue, active song) |
+| Redux Toolkit | Playback state (queue, transport, recents) |
 | React Router v6 | Client-side routing |
 | Tailwind CSS 3 | Utility-first styling |
 | Vite 5 | Build tool & dev server |
-| Swiper | Artist carousel |
 | React Icons | Icon library |
 
 ## Getting Started
@@ -96,8 +96,8 @@ src/
 │   ├── songs.js             # Songs, search, related, play tracking
 │   ├── artists.js           # Artists, detail, artist songs
 │   ├── albums.js            # Top albums, album detail
-│   ├── charts.js            # Play-count rankings
-│   ├── categories.js        # Genre categories
+│   ├── moods.js             # Mood -> songs
+│   ├── categories.js        # Track categories
 │   ├── likes.js             # Liked songs
 │   ├── admin.js             # CRUD + storage upload
 │   └── index.js             # Barrel export
@@ -118,11 +118,11 @@ src/
 │   │   └── Dropdown.jsx     # Glass dropdown
 │   ├── AmbientBackdrop.jsx  # Drifting colour fields behind the glass
 │   ├── LikeButton.jsx       # Like / unlike toggle
+│   ├── MoodCard.jsx         # Mood tile
+│   ├── SleepTimer.jsx       # Stop-playing-in menu
 │   ├── Sidebar.jsx          # Fixed sidebar with navigation
 │   ├── Searchbar.jsx        # Fixed search bar with theme switcher
-│   ├── TopPlay.jsx          # Charts sidebar & artist carousel
 │   ├── SongCard.jsx         # Song grid card
-│   ├── ArtistCard.jsx       # Artist grid card
 │   ├── PlayPause.jsx        # Play/pause button
 │   ├── SongBar.jsx          # Song list item
 │   ├── RelateSong.jsx       # Related songs section
@@ -146,17 +146,17 @@ src/
 │   └── useDominantColors.js # Cover-art colour extraction
 ├── lib/
 │   ├── supabase.js          # Supabase client
+│   ├── moods.js             # Mood definitions + time-of-day logic
 │   └── formatTime.js        # Seconds -> m:ss
 ├── pages/
-│   ├── Discover.jsx         # Genre-filtered songs with pagination
-│   ├── Artists.jsx          # Artists grid
-│   ├── Charts.jsx           # Top charts
+│   ├── Home.jsx             # Greeting, moods, recently played
+│   ├── Mood.jsx             # Songs for one mood
 │   ├── Liked.jsx            # Liked songs grid
 │   ├── ArtistDetail.jsx     # Artist detail + songs
 │   ├── SongDetail.jsx       # Song detail + lyrics + related songs
 │   ├── Search.jsx           # Search results
-│   ├── NowPlaying.jsx       # Full-screen player
-│   ├── MusicPlayer.jsx      # Bottom player bar
+│   ├── NowPlaying.jsx       # Immersive player
+│   ├── MusicPlayer.jsx      # Floating dock contents
 │   ├── AdminDashboard.jsx   # Content management
 │   └── NotFound.jsx         # 404 state
 ├── redux/
@@ -198,9 +198,23 @@ Every key is defined in `src/api/queryKeys.js` and is hierarchical, so
 invalidating `["artists"]` cascades to the top-artists list and every artist's
 song list. Two hooks that run different queries must never share a key.
 
+### Moods
+
+Moods live in `src/lib/moods.js`, not in the database. Each one maps to a set
+of category slugs, so this works against existing data with no migration and no
+re-tagging. `useMoodSongs` resolves those slugs to category ids and filters.
+
+If you later add a real `mood` column to `songs`, `useMoodSongs` is the only
+function that has to change — nothing else reads `categories` directly.
+
+The `everything` mood has no category filter. It exists so a track with no
+category set is still reachable.
+
 ### Not yet wired to UI
 
-`useTopAlbums` and `useAlbumDetail` work but have no component using them.
+`useTopAlbums` and `useAlbumDetail` work but have no component using them. The
+`top_charts` and `top_artists` views still exist in the database if you ever
+want rankings back.
 
 ## Playback
 
@@ -280,14 +294,6 @@ the point. The record's spin animation is always applied and paused via
 to 0°; the spindle sits outside the rotating element because a real one does
 not turn with the record.
 
-### Legacy classes
-
-The `retro-*` classes still exist in `index.css`, redefined on top of the glass
-base so un-migrated pages inherit the new look automatically. They are being
-removed page by page; the content components (`SongCard`, `SongBar`,
-`TopPlayCard`, `ArtistCard`, `DetailsTitle`) and the list pages still use
-them.
-
 **Rules**
 
 - **Never nest more than two blurred layers.** Each re-blurs what the one below
@@ -340,11 +346,11 @@ backdrop enough to break text contrast on the panes above.
 
 ### Responsive Breakpoints
 
-| Screen | Sidebar | TopPlay | Grid |
+| Screen | Sidebar | Song grid | Mood grid |
 |---|---|---|---|
-| Mobile (<768px) | Hamburger menu | Hidden | 2 columns |
-| Tablet (768-1023px) | Fixed sidebar | Hidden | 3 columns |
-| Desktop (1024px+) | Fixed sidebar | Right sidebar | 3-4 columns |
+| Mobile (<768px) | Drawer | 2 columns | 2 columns |
+| Tablet (768-1023px) | Fixed rail | 3 columns | 2 columns |
+| Desktop (1024px+) | Fixed rail | 3-4 columns | 3 columns |
 
 ## Admin Access
 

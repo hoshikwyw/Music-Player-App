@@ -13,11 +13,11 @@ const SongBar = ({
   showAlbum = false,
 }) => (
   <div
-    className={`w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg sm:rounded-[10px] cursor-pointer transition-all duration-150 mb-0.5 ${
-      activeSong?.id === song.id ? "bg-primary/8" : "hover:bg-background-secondary"
+    className={`w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-glass-sm cursor-pointer transition-colors duration-150 mb-0.5 ${
+      activeSong?.id === song.id ? "bg-primary/12" : "glass-flat"
     }`}
   >
-    <span className="text-[10px] sm:text-[11px] font-bold text-text-muted font-retro-mono w-4 sm:w-5 text-center flex-shrink-0">
+    <span className="text-[10px] sm:text-[11px] font-bold text-text-muted font-mono w-4 sm:w-5 text-center flex-shrink-0">
       {String(i + 1).padStart(2, "0")}
     </span>
     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden flex-shrink-0">

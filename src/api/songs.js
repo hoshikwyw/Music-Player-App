@@ -3,33 +3,6 @@ import { supabase } from "../lib/supabase";
 import { mapSong, SONG_SELECT } from "./mappers";
 import { queryKeys, rootKeys } from "./queryKeys";
 
-// Songs, optionally narrowed to one category slug.
-export function useSongs(genreSlug) {
-  return useQuery({
-    queryKey: queryKeys.songs(genreSlug),
-    queryFn: async () => {
-      let query = supabase
-        .from("songs")
-        .select(SONG_SELECT)
-        .order("play_count", { ascending: false });
-
-      if (genreSlug) {
-        const { data: category } = await supabase
-          .from("categories")
-          .select("id")
-          .eq("slug", genreSlug)
-          .single();
-
-        if (category) query = query.eq("category_id", category.id);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data.map(mapSong);
-    },
-  });
-}
-
 export function useSongDetail(songId) {
   return useQuery({
     queryKey: queryKeys.song(songId),
@@ -101,7 +74,6 @@ export function useTrackPlay() {
     },
     onSuccess: () => {
       // Play counts drive every ranking in the app.
-      queryClient.invalidateQueries({ queryKey: rootKeys.charts });
       queryClient.invalidateQueries({ queryKey: rootKeys.artists });
       queryClient.invalidateQueries({ queryKey: rootKeys.albums });
     },

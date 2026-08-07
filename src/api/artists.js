@@ -3,34 +3,9 @@ import { supabase } from "../lib/supabase";
 import { mapArtist, mapSong, SONG_SELECT } from "./mappers";
 import { queryKeys } from "./queryKeys";
 
-// Every artist, ranked by play count.
-export function useArtists() {
-  return useQuery({
-    queryKey: queryKeys.artists(),
-    queryFn: async () => {
-      const { data, error } = await supabase.from("top_artists").select("*");
-      if (error) throw error;
-      return data.map(mapArtist);
-    },
-  });
-}
-
-// The leaderboard slice. Distinct key from useArtists -- same view, different
-// row count, so sharing a key would let whichever mounted first win.
-export function useTopArtists() {
-  return useQuery({
-    queryKey: queryKeys.topArtists(),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("top_artists")
-        .select("*")
-        .limit(20);
-      if (error) throw error;
-      return data.map(mapArtist);
-    },
-  });
-}
-
+// Artists are reachable from a track, not browsed as a list, so there is no
+// useArtists / useTopArtists any more. The top_artists view still exists in
+// the database if you want to bring a leaderboard back.
 export function useArtistDetail(artistId) {
   return useQuery({
     queryKey: queryKeys.artist(artistId),

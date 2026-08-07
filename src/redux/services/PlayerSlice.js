@@ -1,10 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export const VOLUME_STORAGE_KEY = "player:volume";
+export const RECENT_STORAGE_KEY = "player:recent";
+
+const RECENT_LIMIT = 12;
 
 function loadStoredVolume() {
   const stored = Number(localStorage.getItem(VOLUME_STORAGE_KEY));
   return Number.isFinite(stored) && stored >= 0 && stored <= 1 ? stored : 0.3;
+}
+
+function loadStoredRecent() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY) ?? "[]");
+    return Array.isArray(parsed) ? parsed.slice(0, RECENT_LIMIT) : [];
+  } catch {
+    return [];
+  }
 }
 
 // Picks any index except the current one, so shuffle never repeats a track
@@ -35,7 +47,12 @@ const initialState = {
   // requested time equals the previous one.
   seek: { time: 0, token: 0 },
 
-  genreId: "",
+  // Kept here rather than in a separate store so the home screen re-renders
+  // the moment something starts playing. Persisted by AudioEngine.
+  recentlyPlayed: loadStoredRecent(),
+
+  // Epoch ms, or null. AudioEngine polls this and pauses when it passes.
+  sleepTimerEndsAt: null,
 };
 
 // Skipping always resumes playback, matching how the player behaved before the
@@ -132,8 +149,28 @@ export const playerSlice = createSlice({
       state.progress = action.payload;
     },
 
-    selectGenreListId: (state, action) => {
-      state.genreId = action.payload;
+    recordPlay: (state, action) => {
+      const song = action.payload;
+      if (!song?.id) return;
+
+      state.recentlyPlayed = [
+        song,
+        ...state.recentlyPlayed.filter((entry) => entry.id !== song.id),
+      ].slice(0, RECENT_LIMIT);
+    },
+
+    clearRecentlyPlayed: (state) => {
+      state.recentlyPlayed = [];
+    },
+
+    // Date.now() lives in prepare so the reducer stays pure.
+    setSleepTimer: {
+      reducer: (state, action) => {
+        state.sleepTimerEndsAt = action.payload;
+      },
+      prepare: (minutes) => ({
+        payload: minutes ? Date.now() + minutes * 60_000 : null,
+      }),
     },
   },
 });
@@ -151,7 +188,9 @@ export const {
   setDuration,
   setProgress,
   seekTo,
-  selectGenreListId,
+  recordPlay,
+  clearRecentlyPlayed,
+  setSleepTimer,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;

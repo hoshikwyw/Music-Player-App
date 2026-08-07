@@ -35,12 +35,12 @@ const SongDetail = () => {
     <div className="flex flex-col mt-2 sm:mt-4">
       <DetailsTitle song={song} />
 
-      <div className="retro-card p-3 sm:p-4 mb-4 sm:mb-5">
+      <div className="glass-2 rounded-glass p-4 sm:p-5 mb-5">
         <h2 className="text-base sm:text-lg font-bold text-text-primary flex items-center gap-1.5 mb-2 sm:mb-3">
           <span className="w-1.5 h-1.5 rounded-full bg-primary" />
           Lyrics
         </h2>
-        <div className="retro-divider mb-2 sm:mb-3" />
+        <div className="glass-divider mb-3" />
         {song?.lyrics.length ? (
           <div className="space-y-0.5">
             {song.lyrics.map((line, i) => (

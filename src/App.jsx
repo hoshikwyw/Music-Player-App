@@ -1,14 +1,12 @@
 import Sidebar from './components/Sidebar'
 import Searchbar from './components/Searchbar'
-import { Route, Routes, useLocation } from 'react-router-dom'
-import Discover from './pages/Discover'
-import ArtistDetail from "./pages/ArtistDetail"
-import Artists from "./pages/Artists"
-import SongDetail from "./pages/SongDetail"
-import TopPlay from './components/TopPlay'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import Home from './pages/Home'
+import Mood from './pages/Mood'
+import ArtistDetail from './pages/ArtistDetail'
+import SongDetail from './pages/SongDetail'
 import MusicPlayer from './pages/MusicPlayer'
 import { useActiveSong } from './redux/services/playerSelectors'
-import Charts from './pages/Charts'
 import Liked from './pages/Liked'
 import Search from './pages/Search'
 import NowPlaying from './pages/NowPlaying'
@@ -44,26 +42,24 @@ const App = () => {
         )}
 
         <div
-          className={`flex-1 flex lg:flex-row flex-col overflow-y-auto hide-scrollbar ${
+          className={`flex-1 overflow-y-auto hide-scrollbar ${
             isNowPlaying ? 'mt-0' : 'mt-[48px]'
           }`}
         >
           <main
-            className={`flex-1 min-w-0 px-3 sm:px-4 md:px-5 pt-4 ${
+            className={`w-full max-w-6xl mx-auto px-3 sm:px-4 md:px-6 pt-4 ${
               showDock ? 'pb-32 sm:pb-36' : 'pb-8'
             }`}
           >
             {/* Keyed by path so navigating away clears a crashed route */}
             <ErrorBoundary key={location.pathname}>
               <Routes>
-                <Route path='/' element={<Discover />} />
-                <Route path='/discover' element={<Discover />} />
-                <Route path='/artists/:id' element={<ArtistDetail />} />
-                <Route path='/songs/:songid' element={<SongDetail />} />
-                <Route path='/artists' element={<Artists />} />
-                <Route path='/charts' element={<Charts />} />
+                <Route path='/' element={<Home />} />
+                <Route path='/mood/:slug' element={<Mood />} />
                 <Route path='/liked' element={<Liked />} />
                 <Route path='/search/:searchTerm' element={<Search />} />
+                <Route path='/songs/:songid' element={<SongDetail />} />
+                <Route path='/artists/:id' element={<ArtistDetail />} />
                 <Route path='/now-playing' element={<NowPlaying />} />
                 <Route
                   path='/superadmin'
@@ -73,22 +69,17 @@ const App = () => {
                     </RequireAdmin>
                   }
                 />
+
+                {/* Old catalogue routes, kept as redirects so existing links
+                    and bookmarks do not 404. */}
+                <Route path='/discover' element={<Navigate to='/' replace />} />
+                <Route path='/charts' element={<Navigate to='/mood/everything' replace />} />
+                <Route path='/artists' element={<Navigate to='/mood/everything' replace />} />
+
                 <Route path='*' element={<NotFound />} />
               </Routes>
             </ErrorBoundary>
           </main>
-
-          {/* Hidden on Now Playing -- a charts rail alongside the immersive
-              player undercuts the whole point of that screen. */}
-          {!isNowPlaying && (
-            <aside
-              className={`hidden lg:block lg:sticky lg:top-0 self-start lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto hide-scrollbar flex-shrink-0 lg:pr-4 lg:pt-4 ${
-                showDock ? 'lg:pb-32' : 'lg:pb-8'
-              }`}
-            >
-              <TopPlay />
-            </aside>
-          )}
         </div>
       </div>
 

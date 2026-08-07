@@ -68,12 +68,7 @@
   .glass-2,
   .glass-3,
   .glass-btn,
-  .glass-input,
-  .retro-card,
-  .retro-card-interactive,
-  .retro-btn,
-  .retro-btn-outline,
-  .retro-input {
+  .glass-input {
     --pane-blur: 20px;
     --pane-saturate: 180%;
 
@@ -91,10 +86,7 @@
   /* Elevation 1 -- subtle chrome: top bars, nav, buttons */
   .glass-1,
   .glass-btn,
-  .glass-input,
-  .retro-btn,
-  .retro-btn-outline,
-  .retro-input {
+  .glass-input {
     --pane-blur: 12px;
     --pane-saturate: 160%;
   }
@@ -125,16 +117,14 @@
   }
 
   /* Hover lift plus a light sweep across the pane. */
-  .glass-interactive,
-  .retro-card-interactive {
+  .glass-interactive {
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 0.25s ease, background-color 0.25s ease;
   }
 
-  .glass-interactive::after,
-  .retro-card-interactive::after {
+  .glass-interactive::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -150,8 +140,7 @@
     pointer-events: none;
   }
 
-  .glass-interactive:hover,
-  .retro-card-interactive:hover {
+  .glass-interactive:hover {
     transform: translateY(-2px);
     background: var(--glass-tint-strong);
     box-shadow:
@@ -160,51 +149,41 @@
       0 16px 40px -12px var(--glass-shadow);
   }
 
-  .glass-interactive:hover::after,
-  .retro-card-interactive:hover::after {
+  .glass-interactive:hover::after {
     opacity: 0.35;
     transform: translateX(60%);
   }
 
-  .glass-interactive:active,
-  .retro-card-interactive:active {
+  .glass-interactive:active {
     transform: translateY(0);
   }
 
   /* ---------- Controls ---------- */
 
-  .glass-btn,
-  .retro-btn,
-  .retro-btn-outline {
+  .glass-btn {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-semibold cursor-pointer;
     color: var(--color-text-primary);
     transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
       background-color 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .glass-btn:hover,
-  .retro-btn-outline:hover {
+  .glass-btn:hover {
     background: var(--glass-tint-strong);
     transform: translateY(-1px);
   }
 
-  .glass-btn:active,
-  .retro-btn:active,
-  .retro-btn-outline:active {
+  .glass-btn:active {
     transform: translateY(0) scale(0.98);
   }
 
-  .glass-btn:disabled,
-  .retro-btn:disabled,
-  .retro-btn-outline:disabled {
+  .glass-btn:disabled {
     @apply opacity-40 cursor-not-allowed;
     transform: none;
   }
 
   /* Solid accent fill -- deliberately not glass, so primary actions read as
      the one opaque thing on screen. */
-  .glass-btn-accent,
-  .retro-btn {
+  .glass-btn-accent {
     background: var(--color-primary);
     color: var(--color-on-accent);
     border-color: transparent;
@@ -213,42 +192,38 @@
     box-shadow: 0 6px 20px -6px color-mix(in srgb, var(--color-primary) 70%, transparent);
   }
 
-  .glass-btn-accent:hover,
-  .retro-btn:hover {
+  .glass-btn-accent:hover {
     background: var(--color-primary-light);
     transform: translateY(-1px);
   }
 
-  .glass-input,
-  .retro-input {
-    @apply rounded-full px-4 py-2 text-sm;
+  /* Rounded rather than pill: a full radius looks wrong on a textarea or a
+     multi-line field. The search bar opts into a pill with !rounded-full. */
+  .glass-input {
+    @apply rounded-glass-sm px-4 py-2 text-sm;
     color: var(--color-text-primary);
     outline: none;
   }
 
-  .glass-input::placeholder,
-  .retro-input::placeholder {
+  .glass-input::placeholder {
     color: var(--color-text-muted);
   }
 
-  .glass-input:focus-within,
-  .retro-input:focus-within {
+  .glass-input:focus-within {
     border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
     box-shadow:
       inset 0 1px 0 0 var(--glass-highlight),
       0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
   }
 
-  .glass-badge,
-  .retro-badge {
+  .glass-badge {
     @apply inline-flex items-center px-2.5 py-0.5 text-xs font-semibold rounded-full;
     background: var(--glass-tint-strong);
     border: 1px solid var(--glass-border);
     color: var(--color-text-secondary);
   }
 
-  .glass-divider,
-  .retro-divider {
+  .glass-divider {
     height: 1px;
     border: 0;
     background: linear-gradient(
@@ -259,46 +234,24 @@
     );
   }
 
-  .retro-divider {
-    @apply w-full;
-  }
 
-  .retro-title {
-    @apply text-2xl font-bold text-text-primary tracking-tight;
-  }
 
-  .glass-range,
-  .retro-range {
+  .glass-range {
     @apply appearance-none h-1 rounded-full outline-none cursor-pointer;
     background: var(--glass-tint-strong);
   }
 
-  .glass-range::-webkit-slider-thumb,
-  .retro-range::-webkit-slider-thumb {
+  .glass-range::-webkit-slider-thumb {
     @apply appearance-none w-3.5 h-3.5 rounded-full cursor-pointer border-0;
     background: var(--color-primary);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
 
-  .glass-range::-moz-range-thumb,
-  .retro-range::-moz-range-thumb {
+  .glass-range::-moz-range-thumb {
     @apply w-3.5 h-3.5 rounded-full cursor-pointer border-0;
     background: var(--color-primary);
   }
 
-  .retro-scrollbar::-webkit-scrollbar {
-    width: 6px;
-  }
-  .retro-scrollbar::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-  .retro-scrollbar::-webkit-scrollbar-thumb {
-    background-color: var(--glass-border);
-    @apply rounded-full;
-  }
-  .retro-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: var(--glass-highlight);
-  }
 }
 
 /* ============================================================
@@ -354,17 +307,13 @@
   .glass-2,
   .glass-3,
   .glass-flat,
-  .glass-input,
-  .retro-card,
-  .retro-card-interactive,
-  .retro-input {
+  .glass-input {
     background: var(--glass-solid);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
 
-  .glass-btn:not(.glass-btn-accent),
-  .retro-btn-outline {
+  .glass-btn:not(.glass-btn-accent) {
     background: var(--glass-solid);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -381,11 +330,7 @@
   .glass-2,
   .glass-3,
   .glass-input,
-  .retro-card,
-  .retro-card-interactive,
-  .retro-input,
-  .glass-btn:not(.glass-btn-accent),
-  .retro-btn-outline {
+  .glass-btn:not(.glass-btn-accent) {
     background: var(--glass-solid);
   }
 }
@@ -397,16 +342,11 @@
 
   .glass-interactive,
   .glass-interactive::after,
-  .retro-card-interactive,
-  .retro-card-interactive::after,
-  .glass-btn,
-  .retro-btn,
-  .retro-btn-outline {
+  .glass-btn {
     transition-duration: 0.01ms !important;
   }
 
-  .glass-interactive:hover,
-  .retro-card-interactive:hover {
+  .glass-interactive:hover {
     transform: none;
   }
 }

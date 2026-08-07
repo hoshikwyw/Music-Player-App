@@ -33,7 +33,7 @@ const FileUpload = ({ bucket, onUploaded, label }) => {
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={isPending}
-        className="retro-btn-outline !text-xs !px-2.5 !py-1.5 flex items-center gap-1.5"
+        className="glass-btn !text-xs !px-2.5 !py-1.5 flex items-center gap-1.5"
       >
         <BsUpload className="text-[10px]" />
         {isPending ? "Uploading..." : label || "Upload"}
@@ -56,7 +56,7 @@ const Tab = ({ active, icon: Icon, label, count, onClick }) => (
     <Icon className="text-sm" />
     {label}
     {count != null && (
-      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-retro-mono ${
+      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
         active ? "bg-on-accent/20 text-on-accent" : "bg-background-secondary text-text-muted"
       }`}>
         {count}
@@ -70,12 +70,12 @@ const Tab = ({ active, icon: Icon, label, count, onClick }) => (
 // ============================================
 const ConfirmDelete = ({ name, onConfirm, onCancel }) => (
   <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div className="retro-card p-5 max-w-sm w-full">
+    <div className="glass-2 rounded-glass p-5 max-w-sm w-full">
       <h3 className="font-bold text-text-primary mb-2">Delete &quot;{name}&quot;?</h3>
       <p className="text-sm text-text-muted mb-4">This action cannot be undone.</p>
       <div className="flex gap-2 justify-end">
-        <button onClick={onCancel} className="retro-btn-outline !text-xs !px-3 !py-1.5">Cancel</button>
-        <button onClick={onConfirm} className="retro-btn !text-xs !px-3 !py-1.5 !bg-danger !border-danger">Delete</button>
+        <button onClick={onCancel} className="glass-btn !text-xs !px-3 !py-1.5">Cancel</button>
+        <button onClick={onConfirm} className="glass-btn glass-btn-accent !text-xs !px-3 !py-1.5 !bg-danger !border-danger">Delete</button>
       </div>
     </div>
   </div>
@@ -162,70 +162,70 @@ const SongsTab = () => {
 
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-text-primary">{songs?.length || 0} Songs</h3>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="retro-btn !text-xs !px-3 !py-1.5 flex items-center gap-1.5">
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="glass-btn glass-btn-accent !text-xs !px-3 !py-1.5 flex items-center gap-1.5">
           <BsPlus className="text-sm" /> Add Song
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="retro-card p-4 mb-4 space-y-3">
+        <form onSubmit={handleSubmit} className="glass-2 rounded-glass p-4 mb-4 space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-bold text-text-primary">{editing ? "Edit Song" : "New Song"}</h4>
             <button type="button" onClick={resetForm} className="text-text-muted hover:text-text-primary"><BsX size={18} /></button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input placeholder="Title *" value={form.title} onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))} className="retro-input text-sm" required />
-            <select value={form.artist_id} onChange={(e) => handleArtistChange(e.target.value)} className="retro-input text-sm" required>
+            <input placeholder="Title *" value={form.title} onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))} className="glass-input text-sm" required />
+            <select value={form.artist_id} onChange={(e) => handleArtistChange(e.target.value)} className="glass-input text-sm" required>
               <option value="">Select Artist *</option>
               {artists?.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>
-            <select value={form.album_id} onChange={(e) => setForm(f => ({ ...f, album_id: e.target.value }))} className="retro-input text-sm">
+            <select value={form.album_id} onChange={(e) => setForm(f => ({ ...f, album_id: e.target.value }))} className="glass-input text-sm">
               <option value="">Select Album (optional)</option>
               {albums?.filter(al => !form.artist_id || al.artist_id === form.artist_id).map((a) => <option key={a.id} value={a.id}>{a.title}</option>)}
             </select>
-            <select value={form.category_id} onChange={(e) => handleCategoryChange(e.target.value)} className="retro-input text-sm">
+            <select value={form.category_id} onChange={(e) => handleCategoryChange(e.target.value)} className="glass-input text-sm">
               <option value="">Select Category</option>
               {categories?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-            <input placeholder="Duration (seconds)" type="number" value={form.duration} onChange={(e) => setForm(f => ({ ...f, duration: e.target.value }))} className="retro-input text-sm" />
-            {!editing && <input placeholder="Custom ID (auto if empty)" value={form.id} onChange={(e) => setForm(f => ({ ...f, id: e.target.value }))} className="retro-input text-sm" />}
+            <input placeholder="Duration (seconds)" type="number" value={form.duration} onChange={(e) => setForm(f => ({ ...f, duration: e.target.value }))} className="glass-input text-sm" />
+            {!editing && <input placeholder="Custom ID (auto if empty)" value={form.id} onChange={(e) => setForm(f => ({ ...f, id: e.target.value }))} className="glass-input text-sm" />}
           </div>
 
           <div className="flex flex-wrap gap-2 items-center">
             <div className="flex-1 min-w-[200px]">
-              <input placeholder="Cover image URL" value={form.cover_url} onChange={(e) => setForm(f => ({ ...f, cover_url: e.target.value }))} className="retro-input text-sm w-full" />
+              <input placeholder="Cover image URL" value={form.cover_url} onChange={(e) => setForm(f => ({ ...f, cover_url: e.target.value }))} className="glass-input text-sm w-full" />
             </div>
             <FileUpload bucket="covers" label="Upload Cover" onUploaded={(url) => setForm(f => ({ ...f, cover_url: url }))} />
           </div>
 
           <div className="flex flex-wrap gap-2 items-center">
             <div className="flex-1 min-w-[200px]">
-              <input placeholder="Audio file URL" value={form.audio_url} onChange={(e) => setForm(f => ({ ...f, audio_url: e.target.value }))} className="retro-input text-sm w-full" />
+              <input placeholder="Audio file URL" value={form.audio_url} onChange={(e) => setForm(f => ({ ...f, audio_url: e.target.value }))} className="glass-input text-sm w-full" />
             </div>
             <FileUpload bucket="audio" label="Upload Audio" onUploaded={(url) => setForm(f => ({ ...f, audio_url: url }))} />
           </div>
 
-          <textarea placeholder="Lyrics (one line per row)" value={form.lyrics} onChange={(e) => setForm(f => ({ ...f, lyrics: e.target.value }))} rows={4} className="retro-input text-sm w-full" />
+          <textarea placeholder="Lyrics (one line per row)" value={form.lyrics} onChange={(e) => setForm(f => ({ ...f, lyrics: e.target.value }))} rows={4} className="glass-input text-sm w-full" />
 
-          <button type="submit" disabled={isAdding} className="retro-btn !text-xs !px-4 !py-2 flex items-center gap-1.5">
+          <button type="submit" disabled={isAdding} className="glass-btn glass-btn-accent !text-xs !px-4 !py-2 flex items-center gap-1.5">
             <BsCheck size={14} /> {editing ? "Update" : "Add"} Song
           </button>
         </form>
       )}
 
-      <div className="retro-card overflow-hidden">
+      <div className="glass-2 rounded-glass overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b-2 border-border bg-surface text-left">
-                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-retro-mono">COVER</th>
-                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-retro-mono">TITLE</th>
-                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-retro-mono hidden sm:table-cell">ARTIST</th>
-                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-retro-mono hidden md:table-cell">ALBUM</th>
-                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-retro-mono hidden md:table-cell">GENRE</th>
-                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-retro-mono hidden lg:table-cell">PLAYS</th>
-                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-retro-mono text-right">ACTIONS</th>
+                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-mono">COVER</th>
+                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-mono">TITLE</th>
+                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-mono hidden sm:table-cell">ARTIST</th>
+                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-mono hidden md:table-cell">ALBUM</th>
+                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-mono hidden md:table-cell">GENRE</th>
+                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-mono hidden lg:table-cell">PLAYS</th>
+                <th className="px-3 py-2.5 text-[11px] font-bold text-text-muted font-mono text-right">ACTIONS</th>
               </tr>
             </thead>
             <tbody>
@@ -247,9 +247,9 @@ const SongsTab = () => {
                   <td className="px-3 py-2 text-text-secondary hidden sm:table-cell truncate max-w-[120px]">{song.artists?.name || song.artist_name}</td>
                   <td className="px-3 py-2 text-text-muted text-xs hidden md:table-cell truncate max-w-[120px]">{song.albums?.title || "—"}</td>
                   <td className="px-3 py-2 hidden md:table-cell">
-                    {song.genre && <span className="retro-badge text-[9px]">{song.genre}</span>}
+                    {song.genre && <span className="glass-badge text-[9px]">{song.genre}</span>}
                   </td>
-                  <td className="px-3 py-2 text-text-muted font-retro-mono text-xs hidden lg:table-cell">{(song.play_count || 0).toLocaleString()}</td>
+                  <td className="px-3 py-2 text-text-muted font-mono text-xs hidden lg:table-cell">{(song.play_count || 0).toLocaleString()}</td>
                   <td className="px-3 py-2 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button onClick={() => openEdit(song)} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors">
@@ -316,29 +316,29 @@ const ArtistsTab = () => {
 
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-text-primary">{artists?.length || 0} Artists</h3>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="retro-btn !text-xs !px-3 !py-1.5 flex items-center gap-1.5">
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="glass-btn glass-btn-accent !text-xs !px-3 !py-1.5 flex items-center gap-1.5">
           <BsPlus className="text-sm" /> Add Artist
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="retro-card p-4 mb-4 space-y-3">
+        <form onSubmit={handleSubmit} className="glass-2 rounded-glass p-4 mb-4 space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-bold text-text-primary">{editing ? "Edit Artist" : "New Artist"}</h4>
             <button type="button" onClick={resetForm} className="text-text-muted hover:text-text-primary"><BsX size={18} /></button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input placeholder="Name *" value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} className="retro-input text-sm" required />
-            {!editing && <input placeholder="Custom ID (auto if empty)" value={form.id} onChange={(e) => setForm(f => ({ ...f, id: e.target.value }))} className="retro-input text-sm" />}
+            <input placeholder="Name *" value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} className="glass-input text-sm" required />
+            {!editing && <input placeholder="Custom ID (auto if empty)" value={form.id} onChange={(e) => setForm(f => ({ ...f, id: e.target.value }))} className="glass-input text-sm" />}
           </div>
-          <textarea placeholder="Bio" value={form.bio} onChange={(e) => setForm(f => ({ ...f, bio: e.target.value }))} rows={2} className="retro-input text-sm w-full" />
+          <textarea placeholder="Bio" value={form.bio} onChange={(e) => setForm(f => ({ ...f, bio: e.target.value }))} rows={2} className="glass-input text-sm w-full" />
           <div className="flex flex-wrap gap-2 items-center">
             <div className="flex-1 min-w-[200px]">
-              <input placeholder="Avatar URL" value={form.avatar_url} onChange={(e) => setForm(f => ({ ...f, avatar_url: e.target.value }))} className="retro-input text-sm w-full" />
+              <input placeholder="Avatar URL" value={form.avatar_url} onChange={(e) => setForm(f => ({ ...f, avatar_url: e.target.value }))} className="glass-input text-sm w-full" />
             </div>
             <FileUpload bucket="covers" label="Upload Avatar" onUploaded={(url) => setForm(f => ({ ...f, avatar_url: url }))} />
           </div>
-          <button type="submit" disabled={isAdding} className="retro-btn !text-xs !px-4 !py-2 flex items-center gap-1.5">
+          <button type="submit" disabled={isAdding} className="glass-btn glass-btn-accent !text-xs !px-4 !py-2 flex items-center gap-1.5">
             <BsCheck size={14} /> {editing ? "Update" : "Add"} Artist
           </button>
         </form>
@@ -346,7 +346,7 @@ const ArtistsTab = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {artists?.map((artist) => (
-          <div key={artist.id} className="retro-card p-3 flex items-center gap-3">
+          <div key={artist.id} className="glass-2 rounded-glass p-3 flex items-center gap-3">
             <div className="w-12 h-12 rounded-full border border-glass-border overflow-hidden flex-shrink-0 bg-glass">
               {artist.avatar_url ? (
                 <img src={artist.avatar_url} alt="" className="w-full h-full object-cover" />
@@ -424,33 +424,33 @@ const AlbumsTab = () => {
 
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-text-primary">{albums?.length || 0} Albums</h3>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="retro-btn !text-xs !px-3 !py-1.5 flex items-center gap-1.5">
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="glass-btn glass-btn-accent !text-xs !px-3 !py-1.5 flex items-center gap-1.5">
           <BsPlus className="text-sm" /> Add Album
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="retro-card p-4 mb-4 space-y-3">
+        <form onSubmit={handleSubmit} className="glass-2 rounded-glass p-4 mb-4 space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-bold text-text-primary">{editing ? "Edit Album" : "New Album"}</h4>
             <button type="button" onClick={resetForm} className="text-text-muted hover:text-text-primary"><BsX size={18} /></button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input placeholder="Title *" value={form.title} onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))} className="retro-input text-sm" required />
-            <select value={form.artist_id} onChange={(e) => setForm(f => ({ ...f, artist_id: e.target.value }))} className="retro-input text-sm" required>
+            <input placeholder="Title *" value={form.title} onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))} className="glass-input text-sm" required />
+            <select value={form.artist_id} onChange={(e) => setForm(f => ({ ...f, artist_id: e.target.value }))} className="glass-input text-sm" required>
               <option value="">Select Artist *</option>
               {artists?.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>
-            <input type="date" placeholder="Release Date" value={form.release_date} onChange={(e) => setForm(f => ({ ...f, release_date: e.target.value }))} className="retro-input text-sm" />
-            {!editing && <input placeholder="Custom ID (auto if empty)" value={form.id} onChange={(e) => setForm(f => ({ ...f, id: e.target.value }))} className="retro-input text-sm" />}
+            <input type="date" placeholder="Release Date" value={form.release_date} onChange={(e) => setForm(f => ({ ...f, release_date: e.target.value }))} className="glass-input text-sm" />
+            {!editing && <input placeholder="Custom ID (auto if empty)" value={form.id} onChange={(e) => setForm(f => ({ ...f, id: e.target.value }))} className="glass-input text-sm" />}
           </div>
           <div className="flex flex-wrap gap-2 items-center">
             <div className="flex-1 min-w-[200px]">
-              <input placeholder="Cover URL" value={form.cover_url} onChange={(e) => setForm(f => ({ ...f, cover_url: e.target.value }))} className="retro-input text-sm w-full" />
+              <input placeholder="Cover URL" value={form.cover_url} onChange={(e) => setForm(f => ({ ...f, cover_url: e.target.value }))} className="glass-input text-sm w-full" />
             </div>
             <FileUpload bucket="covers" label="Upload Cover" onUploaded={(url) => setForm(f => ({ ...f, cover_url: url }))} />
           </div>
-          <button type="submit" disabled={isAdding} className="retro-btn !text-xs !px-4 !py-2 flex items-center gap-1.5">
+          <button type="submit" disabled={isAdding} className="glass-btn glass-btn-accent !text-xs !px-4 !py-2 flex items-center gap-1.5">
             <BsCheck size={14} /> {editing ? "Update" : "Add"} Album
           </button>
         </form>
@@ -458,7 +458,7 @@ const AlbumsTab = () => {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {albums?.map((album) => (
-          <div key={album.id} className="retro-card p-2.5">
+          <div key={album.id} className="glass-2 rounded-glass p-2.5">
             <div className="w-full aspect-square rounded-lg overflow-hidden border border-border bg-surface mb-2">
               {album.cover_url ? (
                 <img src={album.cover_url} alt="" className="w-full h-full object-cover" />
@@ -468,7 +468,7 @@ const AlbumsTab = () => {
             </div>
             <p className="font-semibold text-text-primary text-[12px] truncate">{album.title}</p>
             <p className="text-[10px] text-text-muted truncate">{album.artists?.name || "Unknown"}</p>
-            {album.release_date && <p className="text-[9px] text-text-muted font-retro-mono mt-0.5">{album.release_date}</p>}
+            {album.release_date && <p className="text-[9px] text-text-muted font-mono mt-0.5">{album.release_date}</p>}
             <div className="flex gap-1 mt-2">
               <button onClick={() => openEdit(album)} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors">
                 <BsPencil className="text-xs" />
@@ -499,11 +499,11 @@ const AdminDashboard = () => {
             <BsShieldLock className="text-primary" />
             Admin Dashboard
           </h2>
-          <p className="text-[10px] sm:text-[11px] text-text-muted mt-0.5 font-retro-mono truncate">
+          <p className="text-[10px] sm:text-[11px] text-text-muted mt-0.5 font-mono truncate">
             {user?.email?.toUpperCase() || "MANAGE YOUR MUSIC LIBRARY"}
           </p>
         </div>
-        <button onClick={signOut} className="retro-btn-outline !text-xs !px-3 !py-1.5">Sign out</button>
+        <button onClick={signOut} className="glass-btn !text-xs !px-3 !py-1.5">Sign out</button>
       </div>
 
       <div className="flex items-center gap-1 mb-4 overflow-x-auto hide-scrollbar">

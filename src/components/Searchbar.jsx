@@ -19,7 +19,7 @@ const Searchbar = () => {
     <div className="glass-1 flex items-center gap-2 px-3 sm:px-4 md:px-5 py-2 !rounded-none !border-x-0 !border-t-0">
       <MobileMenuBtn />
       <form onSubmit={handleSubmit} autoComplete="off" className="flex-1 min-w-0">
-        <div className="glass-input flex items-center gap-2 !py-1.5 !px-3">
+        <div className="glass-input !rounded-full flex items-center gap-2 !py-1.5 !px-3">
           <FiSearch className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-text-muted flex-shrink-0" />
           <input
             name="search-field"

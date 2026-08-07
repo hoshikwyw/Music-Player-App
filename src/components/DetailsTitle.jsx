@@ -9,7 +9,7 @@ const DetailsTitle = ({ artist, song }) => {
 
   return (
     <div className="w-full mb-4 sm:mb-5">
-      <div className="retro-card p-3 sm:p-4 flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+      <div className="glass-2 rounded-glass p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4">
         <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-glass-sm sm:rounded-glass border border-glass-border overflow-hidden flex-shrink-0 shadow-glass">
           <img src={coverUrl} alt={heading} className="w-full h-full object-cover" />
         </div>
@@ -34,7 +34,7 @@ const DetailsTitle = ({ artist, song }) => {
 
           {badge && (
             <div className="mt-1.5">
-              <span className="retro-badge bg-primary/10 text-primary border-primary/30 text-[10px] sm:text-xs">
+              <span className="glass-badge !text-primary text-[10px] sm:text-xs">
                 {badge}
               </span>
             </div>

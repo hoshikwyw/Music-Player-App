@@ -53,25 +53,12 @@ export default {
         "glass-sm": "14px",
         "glass-lg": "28px",
         "glass-xl": "36px",
-        // Aliases kept while pages migrate off the retro classes.
-        retro: "20px",
-        "retro-sm": "14px",
-        "retro-lg": "28px",
-        "retro-xl": "36px",
       },
       boxShadow: {
         glass: "0 8px 32px -12px var(--glass-shadow)",
         "glass-lg": "0 16px 48px -12px var(--glass-shadow)",
         "glass-glow":
           "0 6px 24px -6px color-mix(in srgb, var(--color-primary) 60%, transparent)",
-        // The retro shadows were hard offsets in the border colour. On a dark
-        // background that reads as a smudge, so they are soft lifts now.
-        retro: "0 8px 32px -12px var(--glass-shadow)",
-        "retro-sm": "0 4px 16px -8px var(--glass-shadow)",
-        "retro-lg": "0 16px 48px -12px var(--glass-shadow)",
-        "retro-accent":
-          "0 6px 24px -6px color-mix(in srgb, var(--color-primary) 60%, transparent)",
-        "retro-inset": "inset 0 1px 0 0 var(--glass-highlight)",
       },
       backdropBlur: {
         glass: "20px",
@@ -81,9 +68,6 @@ export default {
       fontFamily: {
         sans: ['"Space Grotesk"', "system-ui", "sans-serif"],
         mono: ['"Space Mono"', "monospace"],
-        // Aliases kept while pages migrate.
-        retro: ['"Space Grotesk"', "system-ui", "sans-serif"],
-        "retro-mono": ['"Space Mono"', "monospace"],
       },
       animation: {
         slideup: "slideup 0.5s cubic-bezier(0.22, 1, 0.36, 1)",

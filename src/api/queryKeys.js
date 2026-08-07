@@ -1,19 +1,15 @@
 // Every query key in the app lives here.
 //
 // Keys are hierarchical so a broad invalidate cascades: invalidating
-// ["artists"] also clears ["artists", "top"] and ["artists", <id>, "songs"].
-// Two hooks that run different queries must never share a key -- that is what
-// made the Artists page show a 20-row slice of the top-artists list.
+// ["songs"] clears every mood list, every search, and every detail view.
+// Two hooks that run different queries must never share a key -- doing so once
+// made an artist list silently render a 20-row slice of a different query.
 export const queryKeys = {
-  songs: (genreSlug) => ["songs", "list", genreSlug ?? null],
+  moodSongs: (moodSlug) => ["songs", "mood", moodSlug],
   song: (id) => ["songs", "detail", id],
   relatedSongs: (id) => ["songs", "related", id],
   searchSongs: (term) => ["songs", "search", term],
 
-  charts: () => ["charts"],
-
-  artists: () => ["artists", "all"],
-  topArtists: () => ["artists", "top"],
   artist: (id) => ["artists", "detail", id],
   artistSongs: (id) => ["artists", "detail", id, "songs"],
 
@@ -31,7 +27,6 @@ export const queryKeys = {
 // Root keys, for mutations that need to invalidate a whole domain.
 export const rootKeys = {
   songs: ["songs"],
-  charts: ["charts"],
   artists: ["artists"],
   albums: ["albums"],
   likedSongs: ["likedSongs"],

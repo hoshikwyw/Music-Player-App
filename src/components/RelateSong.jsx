@@ -14,7 +14,7 @@ const RelateSong = ({
       <span className="w-1.5 h-1.5 rounded-full bg-primary" />
       {title}
     </h2>
-    <div className="retro-card p-2.5">
+    <div className="glass-2 rounded-glass p-2.5">
       {data?.length ? (
         data.map((song, i) => (
           <SongBar

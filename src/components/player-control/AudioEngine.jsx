@@ -4,8 +4,11 @@ import { useTrackPlay } from "../../api";
 import {
   nextTrack,
   playPause,
+  recordPlay,
   setDuration,
   setProgress,
+  setSleepTimer,
+  RECENT_STORAGE_KEY,
   VOLUME_STORAGE_KEY,
 } from "../../redux/services/PlayerSlice";
 
@@ -23,6 +26,8 @@ const AudioEngine = () => {
   const isMuted = useSelector((state) => state.player.isMuted);
   const repeat = useSelector((state) => state.player.repeat);
   const seek = useSelector((state) => state.player.seek);
+  const recentlyPlayed = useSelector((state) => state.player.recentlyPlayed);
+  const sleepTimerEndsAt = useSelector((state) => state.player.sleepTimerEndsAt);
 
   const { mutate: trackPlay } = useTrackPlay();
   const audioUrl = activeSong?.audioUrl || "";
@@ -62,13 +67,36 @@ const AudioEngine = () => {
     audio.currentTime = seek.time;
   }, [seek]);
 
-  // One play counted per song, on first playback.
+  // One play counted per song, on first playback. Also seeds the home
+  // screen's recently-played row.
   useEffect(() => {
     if (isPlaying && activeSong?.id && trackedRef.current !== activeSong.id) {
       trackedRef.current = activeSong.id;
       trackPlay(activeSong.id);
+      dispatch(recordPlay(activeSong));
     }
-  }, [isPlaying, activeSong?.id, trackPlay]);
+  }, [isPlaying, activeSong, trackPlay, dispatch]);
+
+  useEffect(() => {
+    localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(recentlyPlayed));
+  }, [recentlyPlayed]);
+
+  // Sleep timer. Polling beats a single setTimeout here: a laptop that sleeps
+  // and wakes would otherwise fire the timeout late or not at all.
+  useEffect(() => {
+    if (!sleepTimerEndsAt) return undefined;
+
+    const check = () => {
+      if (Date.now() >= sleepTimerEndsAt) {
+        dispatch(playPause(false));
+        dispatch(setSleepTimer(null));
+      }
+    };
+
+    check();
+    const interval = setInterval(check, 1000);
+    return () => clearInterval(interval);
+  }, [sleepTimerEndsAt, dispatch]);
 
   return (
     <audio

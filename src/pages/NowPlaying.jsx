@@ -18,6 +18,7 @@ import GlassSlider from "../components/ui/GlassSlider";
 import VinylDisc from "../components/player-control/VinylDisc";
 import QueueSheet from "../components/player-control/QueueSheet";
 import LikeButton from "../components/LikeButton";
+import SleepTimer from "../components/SleepTimer";
 
 const NowPlaying = () => {
   const navigate = useNavigate();
@@ -184,9 +185,10 @@ const NowPlaying = () => {
         </button>
       </div>
 
-      {/* Secondary row: like + volume */}
-      <div className="w-full flex items-center gap-3 px-2 mb-6">
+      {/* Secondary row: like + sleep timer + volume */}
+      <div className="w-full flex items-center gap-2 px-2 mb-6">
         <LikeButton songId={activeSong.id} />
+        <SleepTimer />
 
         <div className="flex-1 flex items-center gap-2">
           <button

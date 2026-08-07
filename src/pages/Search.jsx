@@ -1,45 +1,61 @@
+import { useParams, Link } from 'react-router-dom';
+import { FiSearch } from 'react-icons/fi';
 import { useNowPlaying } from "../redux/services/playerSelectors";
-import { useParams } from 'react-router-dom';
 import { useSearchSongs } from '../api';
 import Loader from '../components/Loader';
 import Error from '../components/Error';
 import SongCard from '../components/SongCard';
-import { FiSearch } from 'react-icons/fi';
 
 const Search = () => {
   const { searchTerm } = useParams();
+  const term = decodeURIComponent(searchTerm ?? '');
   const { activeSong, isPlaying } = useNowPlaying();
-  const { data: songs, isFetching, error, isLoading } = useSearchSongs(searchTerm);
+  const { data: songs, isLoading, error } = useSearchSongs(term);
 
-  if (isFetching || isLoading) return <Loader />;
+  if (isLoading) return <Loader label="Searching" />;
   if (error) return <Error />;
 
+  const hasResults = songs?.length > 0;
+
   return (
-    <div className="flex flex-col">
-      <div className="mt-2 sm:mt-4 mb-4 sm:mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-text-primary flex items-center gap-2">
-          <FiSearch className="text-primary w-4 h-4 sm:w-5 sm:h-5" />
-          Results
-        </h2>
-        <p className="text-[10px] sm:text-[11px] text-text-muted mt-0.5">
-          Showing results for <span className="font-bold text-primary">&quot;{searchTerm}&quot;</span>
+    <div className="flex flex-col animate-fade-in">
+      <header className="mt-2 mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-text-primary tracking-tight flex items-center gap-2.5">
+          <FiSearch className="text-primary w-5 h-5" />
+          {term}
+        </h1>
+        <p className="text-xs text-text-muted mt-1">
+          {hasResults
+            ? `${songs.length} ${songs.length === 1 ? 'match' : 'matches'}`
+            : 'No matches'}
         </p>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
-        {songs?.map((song, i) => (
-          <SongCard
-            key={song.id}
-            song={song}
-            isPlaying={isPlaying}
-            activeSong={activeSong}
-            data={songs}
-            i={i}
-          />
-        ))}
-      </div>
+      {hasResults ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3">
+          {songs.map((song, i) => (
+            <SongCard
+              key={song.id}
+              song={song}
+              data={songs}
+              i={i}
+              isPlaying={isPlaying}
+              activeSong={activeSong}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-16 gap-2">
+          <p className="text-sm text-text-secondary">
+            Nothing matched that.
+          </p>
+          <Link to="/" className="glass-btn mt-2 !text-xs">
+            Back to moods
+          </Link>
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default Search
+export default Search;

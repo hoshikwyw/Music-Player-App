@@ -6,10 +6,10 @@ import { queryKeys, rootKeys } from "./queryKeys";
 // The dashboard edits database columns directly, so these hooks deliberately
 // return raw rows rather than mapped domain objects.
 
-// Which caches each table's writes affect. Songs touch the most: play counts
-// feed the charts, and song_count feeds the artist and album rankings.
+// Which caches each table's writes affect. Songs touch the most: they appear
+// in every mood list, and song_count feeds the album rankings.
 const AFFECTED_KEYS = {
-  songs: [rootKeys.admin, rootKeys.songs, rootKeys.charts, rootKeys.artists, rootKeys.albums],
+  songs: [rootKeys.admin, rootKeys.songs, rootKeys.artists, rootKeys.albums],
   artists: [rootKeys.admin, rootKeys.artists, rootKeys.songs],
   albums: [rootKeys.admin, rootKeys.albums, rootKeys.songs],
 };
